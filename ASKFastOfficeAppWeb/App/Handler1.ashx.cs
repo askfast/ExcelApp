@@ -13,7 +13,7 @@ namespace ASKFastOfficeAppWeb.App
     /// </summary>
     public class Handler1 : IHttpHandler
     {
-        static String baseUrl = "http://shravan1.askfastmarket1.appspot.com/products/broadcastnew/stream?username=apptestoneline&password=eadeb77d8fba90b42b32b7de13e8aaa6";
+        static String baseUrl = "http://shravan1.askfastmarket1.appspot.com/products/broadcastnew/stream?username=apptestoneline&password=eadeb77d8fba90b42b32b7de13e8aaa6&useClipboard=true";
         public void ProcessRequest(HttpContext context)
         {
             String payload = null;
@@ -22,9 +22,9 @@ namespace ASKFastOfficeAppWeb.App
                 payload = reader.ReadToEnd();
             }
             WebClient askFast = new WebClient();
-            var response = askFast.UploadData(baseUrl, Encoding.ASCII.GetBytes(payload) );
+            //var response = askFast.UploadData(baseUrl, Encoding.ASCII.GetBytes(payload) );
             context.Response.ContentType = "text/plain";
-            context.Response.Write(response);
+            //context.Response.Write(response);
         }
 
         public bool IsReusable

@@ -2,6 +2,13 @@
 
 (function () {
     "use strict";
+    var phoneHeader = "Phone";
+    var firstNameHeader = "First Name";
+    var lastNameHeaderHeader = "Last Name";
+    var emailHeader = "Email";
+    var xmppHeader = "XMPP";
+    var facebookHeader = "Facebook";
+    var twitterHeader = "Twitter";
 
     // The initialize function must be run each time a new page is loaded
     Office.initialize = function (reason) {
@@ -60,83 +67,68 @@
 
     // Reads data from current document selection and displays a notification
     function getDataFromSelection() {
-        Office.context.document.getSelectedDataAsync(Office.CoercionType.Matrix,
+        //fix a binding element to the addresses selected
+        Office.context.document.bindings.addFromSelectionAsync(Office.BindingType.Matrix, { id: 'addresses' },
             function (result) {
                 if (result.status === Office.AsyncResultStatus.Succeeded) {
-                    var csvData = getCSVFromSelection(result);
-                    var json = new Object();
-                    json["csvStream"] = csvData;
-                    json["senderName"] = $('#senderId').val();
-                    json["message"] = $('#message').val();
-                    json["retryMethod"] = 'MANUAL';
-                    json["broadcastName"] = 'Broadcast from ASK-Fast Excel App';
-                    json["emailSubject"] = $('#subject').val();
-                    json["language"] = $('#language').val();
-
-                    
-                    ////build address payload. Refer to https://docs.google.com/a/ask-cs.com/document/d/1J7ceZAy39ZZMc4k8CGivNbkz94zDskGcklriUu0bVzs/edit#bookmark=kix.jxex4x2y5zfl
-                    ////each address must be an element of {}
-                    //var addressCollection = new Object();
-                    //var addressNames = result.value.split("\n");
-                    //for (var addressCount = 0; addressCount < addressNames.length && addressNames[addressCount] != "" ; addressCount++) {
-                    //    var singleAddressNode = new Object();
-                    //    var addressWithName = addressNames[addressCount].split("\t");
-                    //    if (addressWithName.length != 0 && addressWithName[0] != "") {
-                    //        singleAddressNode["address"] = addressWithName[0];
-                    //        addressCollection[addressCount] = singleAddressNode;
-                    //    }
-                    //}
-                    //var addresses = new Object();
-                    //params["url"] = "http://askfastmarket1.appspot.com/resource/question/" + encodeURIComponent($('#message').val());
-                    //params["addressMap"] = addressMap;
-                    //params["publicKey"] = publicKey;
-                    //params["privateKey"] = privateKey;
-                    //params["senderName"] = $('#senderId').val();
-                    //json["params"] = params;
-                    app.showNotification("Sending your request...", "");
-
-                    $.ajax({
-                        cache: false,
-                        crossDomain: true,
-                        contentType: 'application/json; charset=utf-8',
-                        url: '/App/Handler1.ashx',
-                        type: 'POST',
-                        dataType: 'json',
-                        jsonpCallback: function (response) {
-                            app.showNotification("arguments", Array.prototype.join.call(arguments, ' '));
-                        },
-                        data: JSON.stringify(json)
-                    }).success(function (response) {
-                        app.showNotification("Success", response.statusText);
-                        console.log("Success", response.statusText);
-                    }).error(function (response) {
-                        app.showNotification("Error", response.statusText);
-                        console.log("Error", response.statusText);
-                    });
-                } else {
-                    app.showNotification('Error:', result.error.message);
+                    result.value.getDataAsync(getDataFromBinding);
                 }
-                return null;
-            }
-        );
+            });
     };
 
+    function getDataFromBinding(result) {
+        if (result.status === Office.AsyncResultStatus.Succeeded) {
+            var csvData = getCSVFromSelection(result.value);
+            var json = new Object();
+            json["csvStream"] = csvData;
+            json["senderName"] = $('#senderId').val();
+            json["message"] = $('#message').val();
+            json["retryMethod"] = 'MANUAL';
+            json["broadcastName"] = 'Broadcast from ASK-Fast Excel App';
+            json["emailSubject"] = $('#subject').val();
+            json["language"] = $('#language').val();
+            app.showNotification("Sending your request...", "");
+            $.ajax({
+                cache: false,
+                crossDomain: true,
+                contentType: 'application/json; charset=utf-8',
+                url: '/App/Handler1.ashx',
+                type: 'POST',
+                dataType: 'json',
+                jsonpCallback: function (response) {
+                    app.showNotification("arguments", Array.prototype.join.call(arguments, ' '));
+                },
+                data: JSON.stringify(json)
+            }).success(function (response) {
+                app.showNotification("Success", response.statusText);
+                console.log("Success", response.statusText);
+            }).error(function (response) {
+                app.showNotification("Error", response.statusText);
+                console.log("Error", response.statusText);
+            });
+        } else {
+            app.showNotification('Error:', result.error.message);
+        }
+    }
+
     function getCSVFromSelection(result) {
-        if (result.status == 'succeeded') {
-            var resultCSV = '';
-            for (var rowCount = 0; rowCount < result.value.length; rowCount++) {
-                for (var columnCount = 0; columnCount < result.value[rowCount].length; columnCount++) {
-                    resultCSV += result.value[rowCount][columnCount];
-                    if (columnCount != result.value[rowCount].length - 1) {
-                        resultCSV += ",";
-                    }
-                }
-                if (rowCount != result.value.length - 1) {
-                    resultCSV += "\n";
+        var resultCSV = '';
+        for (var rowCount = 0; rowCount < result.length; rowCount++) {
+            for (var columnCount = 0; columnCount < result[rowCount].length; columnCount++) {
+                resultCSV += result[rowCount][columnCount];
+                if (columnCount != result[rowCount].length - 1) {
+                    resultCSV += ",";
                 }
             }
-            return resultCSV;
+            if (rowCount != result.length - 1) {
+                resultCSV += "\n";
+            }
         }
+        //check if a single cell is selected i.e one row and one column range
+        if (result.length == 1 && result[0].length == 1) {
+            
+        }
+        return resultCSV;
     }
 
     //converts the selected excel data to csv format
@@ -145,4 +137,26 @@
             $('#send').removeAttr("disabled");
         }
     };
+
+    //get all the channels selected
+    function getChannelsChecked() {
+        var resultChannels = new Object();
+        var channelCounter = 0;
+        if ($('#xmpp').is(":checked")) {
+            resultChannels[channelCounter++] = $('#xmpp').val();
+        }
+        if ($('#mail').is(":checked")) {
+            resultChannels[channelCounter++] = $('#mail').val();
+        }
+        if ($('#broadsoft').is(":checked")) {
+            resultChannels[channelCounter++] = $('#broadsoft').val();
+        }
+        if ($('#sms').is(":checked")) {
+            resultChannels[channelCounter++] = $('#sms').val();
+        }
+        if ($('#twitter').is(":checked")) {
+            resultChannels[channelCounter++] = $('#twitter').val();
+        }
+        return resultChannels;
+    }
 })();
