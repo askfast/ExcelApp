@@ -13,8 +13,7 @@ namespace ASKFastOfficeAppWeb.App
     /// </summary>
     public class Handler1 : IHttpHandler
     {
-        static String baseUrl = "http://char-a-lot.appspot.com/rpc";
-
+        static String baseUrl = "http://shravan1.askfastmarket1.appspot.com/products/broadcastnew/stream?username=apptestoneline&password=eadeb77d8fba90b42b32b7de13e8aaa6";
         public void ProcessRequest(HttpContext context)
         {
             String payload = null;

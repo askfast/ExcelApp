@@ -11,7 +11,6 @@
                 $('#send').attr("disabled", "disabled");
             }
             $('#message').keyup(enableSendButton);
-            $('#get-data-from-selection').click(getDataFromSelection);
             $('#send').click(getDataFromSelection);
             //disable the extras div
             $('#extrasHeader').hide();
@@ -31,18 +30,18 @@
         if ($('#xmpp').is(":checked") || $('#sms').is(":checked") || $('#mail').is(":checked")) {
             $('#extras').show();
             $('#extrasHeader').show();
-            $('#broadcastMessage').html('<strong>Step 5: </strong> Broadcast your message.');
+            $('#broadcastMessage').html('<strong>Step 6: </strong> Broadcast your message.');
             if ($('#xmpp').is(":checked") || $('#sms').is(":checked")) {
-                $('#senderId').show();
-                $('#subject').hide();
+                $('#senderIdRow').show();
+                $('#subjectRow').hide();
             }
             if ($('#mail').is(":checked")) {
-                $('#senderId').show();
-                $('#subject').show();
+                $('#senderIdRow').show();
+                $('#subjectRow').show();
             }
         }
         else {
-            $('#broadcastMessage').html('<strong>Step 4: </strong> Broadcast your message.');
+            $('#broadcastMessage').html('<strong>Step 5: </strong> Broadcast your message.');
             $('#extrasHeader').hide();
             $('#extras').hide();
         }
@@ -61,60 +60,39 @@
 
     // Reads data from current document selection and displays a notification
     function getDataFromSelection() {
-        Office.context.document.getSelectedDataAsync(Office.CoercionType.Text,
+        Office.context.document.getSelectedDataAsync(Office.CoercionType.Matrix,
             function (result) {
                 if (result.status === Office.AsyncResultStatus.Succeeded) {
+                    var csvData = getCSVFromSelection(result);
                     var json = new Object();
-                    json["method"] = "outboundCallWithMap";
-                    var params = new Object();
-                    var adapterId = null;
-                    var publicKey = "";
-                    var privateKey = "";
-                    switch ($('#adapterType').val())
-                    {
-                        case "mail":
-                            adapterId = "cc3b0c20-2ffd-11e3-a94b-00007f000001";
-                            publicKey = "oneline@askfast.com";
-                            break;
-                        case "xmpp":
-                            adapterId = "f3ccf8f0-6b92-11e2-b94c-00007f000001";
-                            publicKey = "5368dbd0-058f-11e3-a6c9-060dc6d9dd94";
-                            break;
-                        case "broadsoft":
-                            adapterId = "151b05e0-25f3-11e3-a6c7-00007f000001";
-                            break;
-                        case "sms":
-                            adapterId = "3c9e7300-0e4b-11e3-837b-00007f000001";
-                            break;
-                        case "twitter":
-                            adapterId = "e8f42228-13a9-406f-b991-748d1a61504d";
-                            break;
-                    }
-                    if (adapterId == null) {
-                        params["adapterID"] = $('#adapterType').val().toUpperCase;
-                    }
-                    else {
-                        params["adapterID"] = adapterId;
-                    }
-                    var addressMap = new Object();
-                    var addressNames = result.value.split("\n");
-                    for (var addressCount = 0; addressCount < addressNames.length && addressNames[addressCount] != "" ; addressCount++) {
-                        var addressWithName = addressNames[addressCount].split("\t");
-                        if (addressWithName.length != 0 && addressWithName[0] != "") {
-                            if (addressWithName.length > 1) {
-                                addressMap[addressWithName[0]] = addressWithName[1];
-                            }
-                            else {
-                                addressMap[addressWithName[0]] = "";
-                            }
-                        }
-                    }
-                    params["url"] = "http://askfastmarket1.appspot.com/resource/question/" + encodeURIComponent($('#message').val());
-                    params["addressMap"] = addressMap;
-                    params["publicKey"] = publicKey;
-                    params["privateKey"] = privateKey;
-                    params["senderName"] = $('#senderId').val();
-                    json["params"] = params;
+                    json["csvStream"] = csvData;
+                    json["senderName"] = $('#senderId').val();
+                    json["message"] = $('#message').val();
+                    json["retryMethod"] = 'MANUAL';
+                    json["broadcastName"] = 'Broadcast from ASK-Fast Excel App';
+                    json["emailSubject"] = $('#subject').val();
+                    json["language"] = $('#language').val();
+
+                    
+                    ////build address payload. Refer to https://docs.google.com/a/ask-cs.com/document/d/1J7ceZAy39ZZMc4k8CGivNbkz94zDskGcklriUu0bVzs/edit#bookmark=kix.jxex4x2y5zfl
+                    ////each address must be an element of {}
+                    //var addressCollection = new Object();
+                    //var addressNames = result.value.split("\n");
+                    //for (var addressCount = 0; addressCount < addressNames.length && addressNames[addressCount] != "" ; addressCount++) {
+                    //    var singleAddressNode = new Object();
+                    //    var addressWithName = addressNames[addressCount].split("\t");
+                    //    if (addressWithName.length != 0 && addressWithName[0] != "") {
+                    //        singleAddressNode["address"] = addressWithName[0];
+                    //        addressCollection[addressCount] = singleAddressNode;
+                    //    }
+                    //}
+                    //var addresses = new Object();
+                    //params["url"] = "http://askfastmarket1.appspot.com/resource/question/" + encodeURIComponent($('#message').val());
+                    //params["addressMap"] = addressMap;
+                    //params["publicKey"] = publicKey;
+                    //params["privateKey"] = privateKey;
+                    //params["senderName"] = $('#senderId').val();
+                    //json["params"] = params;
                     app.showNotification("Sending your request...", "");
 
                     $.ajax({
@@ -143,8 +121,26 @@
         );
     };
 
-    //enables the send button, only when some message is entered
-    function enableSendButton() {
+    function getCSVFromSelection(result) {
+        if (result.status == 'succeeded') {
+            var resultCSV = '';
+            for (var rowCount = 0; rowCount < result.value.length; rowCount++) {
+                for (var columnCount = 0; columnCount < result.value[rowCount].length; columnCount++) {
+                    resultCSV += result.value[rowCount][columnCount];
+                    if (columnCount != result.value[rowCount].length - 1) {
+                        resultCSV += ",";
+                    }
+                }
+                if (rowCount != result.value.length - 1) {
+                    resultCSV += "\n";
+                }
+            }
+            return resultCSV;
+        }
+    }
+
+    //converts the selected excel data to csv format
+    function enableSendButton(result) {
         if ($('#message').val() != "") {
             $('#send').removeAttr("disabled");
         }
