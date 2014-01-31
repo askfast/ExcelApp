@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <title></title>
-    <script src="../../Scripts/jquery-1.9.1.js" type="text/javascript"></script>
+    <link href="../../ask-bootstrap/public/src/css/bootstrap.css" rel="stylesheet">
+    <link href="../../ask-bootstrap/public/src/css/responsive.css" rel="stylesheet">
+    <script src="../../ask-bootstrap/public/src/js/libs/jquery/jquery-1.9.1.js" type="text/javascript"></script>
 
     <link href="../../Content/Office.css" rel="stylesheet" type="text/css" />
     <!--<script src="https://appsforoffice.microsoft.com/lib/1.0/hosted/office.js" type="text/javascript"></script>-->
@@ -17,18 +19,25 @@
 
     <link href="Home.css" rel="stylesheet" type="text/css" />
     <script src="../../Scripts/Home.js" type="text/javascript"></script>
+    <script src="../../ask-bootstrap/public/src/js/libs/bootstrap/bootstrap.js"></script>
+    <script src="../../ask-bootstrap/public/src/js/libs/bootstrap/bootstrap.min.js"></script>
+    <script src="../../ask-bootstrap/public/src/js/libs/vendor/prefixfree.min.js"></script>
 
 </head>
-<body>    
+<body>
     <!-- Page content -->
-    <div id="content-header" style="background-color: white; height: auto">
+    <!--<div id="content-header" style="background-color: white; height: auto">
         <div class="padding" style="margin-bottom:0px;padding-left: 35px">
             <img src="../../Images/logo.png" alt="ASK-Fast" style="height: 30px">
         </div>
-    </div>
-    <div id="content-main">
-        <div class="padding">
-            <p><strong>Step 1: <label>*</label>: </strong> Select a column having addresses.</p>
+    </div>-->
+    <ul class="nav nav-tabs" id="myTabs">
+        <li class="active"><a href="#homeTab">Home</a></li>
+        <li><a href="#reportTab">Reports</a></li>
+    </ul>
+    <div id='content' class="tab-content">
+        <div class="tab-pane active" id="homeTab">
+            <p><strong>Step 1*: </strong> Select a column having addresses.</p>
             <p><strong>Step 2: </strong> Enter a message to be sent.</p>
             <input type="text" id="message" placeholder="Your message.." style="min-width:300px">
             <table border="0">
@@ -66,15 +75,25 @@
                         </select>
                     </td>
                 </tr>
+                <tr></tr>
+                <tr>
+                    <td><p><strong>Step 4: </strong> Question type: </p> </td>
+                    <td>
+                        <select id="questionType" style="width: 100px" class="text_box">
+                            <option value="comment">Comment</option>
+                            <option value="open">Open</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </td>
+                </tr>
             </table>
-            <p><strong>Step 4: </strong> Please select your broadcast medium(s).</p>
-            <label> Communication Medium</label> <br>
+            <p><strong>Step 5: </strong> Please select your broadcast medium(s).</p>
             <input name="adapterTypes" id="xmpp" type="checkbox" value="xmpp" />XMPP
             <input name="adapterTypes" id="mail" type="checkbox" value="mail" />E-Mail
             <input name="adapterTypes" id="broadsoft" type="checkbox" value="broadsoft" />Call
             <input name="adapterTypes" id="sms" type="checkbox" value="sms" />SMS
             <input name="adapterTypes" id="twitter" type="checkbox" value="twitter" />Twitter
-            <p id="extrasHeader"><strong>Step 5: </strong> Attach your name to your message.</p>
+            <p id="extrasHeader"><strong>Step 6: </strong> Attach your name to your message.</p>
             <table id="extras" border="0">
                 <tr id="senderIdRow">
                     <td>Sender Name: </td>
@@ -85,10 +104,15 @@
                     <td><input type="text" id="subject" placeholder="Add a subject to your email.." style="min-width:200px"></td>
                 </tr>
             </table>
-            <p id="broadcastMessage"><strong>Step 5: </strong> Broadcast your message.</p>
+            <p id="broadcastMessage"><strong>Step 6: </strong> Broadcast your message.</p>
             <button type="button" id="send">Send!</button>
             <p>Check out our developer friendly APIs and other products at:</p>
             <a href="www.ask-fast.com">www.ask-fast.com</a>
+        </div>
+        <div class="tab-pane" id="reportTab">
+            <p><strong>Step 1:</strong> Select a cell where the report has to start.</p>
+            <p id="broadcastMessage"><strong>Step 2: </strong> Generate report.</p>
+            <button type="button" id="generate">Generate!</button>
         </div>
     </div>
 </body>

@@ -29,6 +29,13 @@
             $('#broadsoft').click(toggleAdapterTypes);
             $('#sms').click(toggleAdapterTypes);
             $('#twitter').click(toggleAdapterTypes);
+
+            //create toggle effect for tabs
+            $('#myTabs a').click(function (e) {
+                e.preventDefault()
+                $(this).tab('show')
+            });
+            $('#generate').click(genereateReport);
         });
     };
 
@@ -37,7 +44,7 @@
         if ($('#xmpp').is(":checked") || $('#sms').is(":checked") || $('#mail').is(":checked")) {
             $('#extras').show();
             $('#extrasHeader').show();
-            $('#broadcastMessage').html('<strong>Step 6: </strong> Broadcast your message.');
+            $('#broadcastMessage').html('<strong>Step 7: </strong> Broadcast your message.');
             if ($('#xmpp').is(":checked") || $('#sms').is(":checked")) {
                 $('#senderIdRow').show();
                 $('#subjectRow').hide();
@@ -48,21 +55,10 @@
             }
         }
         else {
-            $('#broadcastMessage').html('<strong>Step 5: </strong> Broadcast your message.');
+            $('#broadcastMessage').html('<strong>Step 6: </strong> Broadcast your message.');
             $('#extrasHeader').hide();
             $('#extras').hide();
         }
-    }
-
-    //
-    //showResult if outbound call was successful
-    function showResult(response) {
-        app.showNotification("Response:", response);
-    }
-
-    //showResult if outbound call was successful
-    function showError(response) {
-        app.showNotification("Error:", response.statusText);
     }
 
     // Reads data from current document selection and displays a notification
@@ -81,18 +77,23 @@
             var csvData = getCSVFromSelection(result.value);
             var json = new Object();
             json["csvStream"] = csvData;
-            json["senderName"] = $('#senderId').val();
-            json["message"] = $('#message').val();
-            json["retryMethod"] = 'MANUAL';
-            json["broadcastName"] = 'Broadcast from ASK-Fast Excel App';
-            json["emailSubject"] = $('#subject').val();
-            json["language"] = $('#language').val();
+            var broadcastNode = new Object();
+            var adapterList = new Object();
+            adapterList["EMAIL"] = "bb3fe5e0-84de-11e3-998f-00007f000001";
+            broadcastNode["adapterList"] = adapterList;
+            broadcastNode["senderName"] = $('#senderId').val();
+            broadcastNode["message"] = $('#message').val();
+            broadcastNode["retryMethod"] = 'MANUAL';
+            broadcastNode["broadcastName"] = 'Broadcast from ASK-Fast Excel App';
+            broadcastNode["emailSubject"] = $('#subject').val();
+            broadcastNode["language"] = $('#language').val();
+            json["broadcast"] = broadcastNode;
             app.showNotification("Sending your request...", "");
             $.ajax({
                 cache: false,
                 crossDomain: true,
                 contentType: 'application/json; charset=utf-8',
-                url: '/App/Handler1.ashx',
+                url: '/App/Handler1.ashx?' + 'questionType=' + $('#questionType').val() + appendHeaders(),
                 type: 'POST',
                 dataType: 'json',
                 jsonpCallback: function (response) {
@@ -111,6 +112,7 @@
         }
     }
 
+    //returns a csv format string from the excel range selected
     function getCSVFromSelection(result) {
         var resultCSV = '';
         for (var rowCount = 0; rowCount < result.length; rowCount++) {
@@ -126,7 +128,7 @@
         }
         //check if a single cell is selected i.e one row and one column range
         if (result.length == 1 && result[0].length == 1) {
-            
+
         }
         return resultCSV;
     }
@@ -158,5 +160,64 @@
             resultChannels[channelCounter++] = $('#twitter').val();
         }
         return resultChannels;
+    }
+
+    //returns a string value of all the header query parameters added
+    function appendHeaders() {
+        return "&firstName=" + encodeURIComponent(firstNameHeader) +
+            "&lastName=" + encodeURIComponent(lastNameHeaderHeader) +
+            "&phoneHeader=" + encodeURIComponent(phoneHeader) +
+            "&emailHeader=" + encodeURIComponent(emailHeader) +
+            "&xmppHeader=" + encodeURIComponent(xmppHeader) +
+            "&facebookHeader=" + encodeURIComponent(facebookHeader) +
+            "&twitterHeader=" + encodeURIComponent(twitterHeader);
+    }
+
+    //generates the report on the excel sheet for the reponse to the questions seen
+    function genereateReport() {
+        $.ajax({
+            contentType: 'application/json; charset=utf-8',
+            url: '/App/Handler1.ashx?' + 'questionType=' + $('#questionType').val() + appendHeaders(),
+            type: 'GET',
+            dataType: 'json'
+        }).success(function (response) {
+            writeReportOnSheet(response);
+            app.showNotification("Success", response.statusText);
+            console.log("Success", response.statusText);
+        }).error(function (response) {
+            app.showNotification("Error", response.statusText);
+            console.log("Error", response.statusText);
+        });
+    }
+
+    //function to write report on the sheet
+    function writeReportOnSheet(response) {
+        if (response != null && response.length != 0) {
+            var data = new Object();
+            var rowCounter = 0;
+            data[rowCounter] = ["Timestamp", "Question", "Responder", "Response"];
+            for (; rowCounter < response.length; rowCounter++) {
+                var questionResponse = response[rowCounter];
+                var rowData = new Object();
+                rowData[0] = questionResponse["timestamp"];
+                var questionMap = questionResponse["clipboardMap"];
+                rowData[1] = "";
+                if (questionMap["question"] != null) {
+                    var question = JSON.parse((questionMap["question"]));
+                    var questionText = question["question_text"];
+                    if (questionText != null) {
+                        questionText = questionText.replace('text://', '');
+                    }
+                    rowData[1] = decodeURIComponent(questionText);
+                }
+                rowData[2] = questionMap["responder"];
+                rowData[3] = questionMap["answer_text"];
+                data[rowCounter + 1] = rowData;
+            }
+            Office.context.document.setSelectedDataAsync(data, { coercionType: Office.CoercionType.Matrix });
+        }
+        else {
+            app.showNotification("Info", "No reports found.")
+        }
     }
 })();
