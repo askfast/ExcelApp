@@ -13,46 +13,54 @@ namespace ASKFastOfficeAppWeb.App
     /// </summary>
     public class Handler1 : IHttpHandler
     {
+        public static readonly String MARKETPLACE_PATH = "http://askfastmarket1.appspot.com";
+        //public static readonly String MARKETPLACE_PATH = "http://127.0.0.1:8888";
+        public static readonly String appID = "EXCEL_OFFICE_APP";
+        public static readonly String baseUrl = MARKETPLACE_PATH + "/products/broadcastnew/stream";
+        public static readonly String fetchResponseURL = MARKETPLACE_PATH + "/resource/examples/clipboard";
         public void ProcessRequest(HttpContext context)
         {
-            String appID = "EXCEL_OFFICE_APP";
-            String baseUrl = "http://askfastmarket1.appspot.com/products/broadcastnew/stream?username=apptestoneline&password=eadeb77d8fba90b42b32b7de13e8aaa6";
-            String fetchResponseURL = "http://askfastmarket1.appspot.com/resource/examples/clipboard?username=apptestoneline&password=eadeb77d8fba90b42b32b7de13e8aaa6";
-            //static string fetchResponseURL = "http://127.0.0.1:8888/resource/examples/clipboard?username=apptestoneline&password=eadeb77d8fba90b42b32b7de13e8aaa6";
-
             var response = "";
             var instanceId = HttpUtility.UrlEncode(context.Request.LogonUserIdentity.Name
                 + "_" + context.Request.LogonUserIdentity.Owner.Value);
-            var appIdParameter = "appId=" + appID + ":" + instanceId;
             try
             {
+                WebClient askFast = new WebClient();
+                foreach (var queryKey in context.Request.QueryString.AllKeys)
+                {
+                    askFast.QueryString.Add(queryKey, context.Request.QueryString.Get(queryKey));
+                }
+                if (context.Request.Headers.Get("X-SESSION_ID") != null)
+                {
+                    askFast.Headers.Add("X-SESSION_ID", context.Request.Headers.Get("X-SESSION_ID"));
+                }
                 if (context.Request.HttpMethod.Equals("POST"))
                 {
                     String payload = null;
-                    foreach (var queryKey in context.Request.QueryString.AllKeys)
-                    {
-                        baseUrl += "&" + queryKey + "=" + context.Request.QueryString[queryKey];
-                    }
                     //add the combination of appId:instanceId as a query parameter for having this as a unique request
-                    baseUrl += "&" + appIdParameter;
+                    askFast.QueryString.Add("appId", appID + ":" + instanceId);
                     using (var reader = new StreamReader(context.Request.InputStream))
                     {
                         payload = reader.ReadToEnd();
                     }
-                    WebClient askFast = new WebClient();
                     var responseByteArray = askFast.UploadData(baseUrl, Encoding.ASCII.GetBytes(payload));
                     response = System.Text.Encoding.Default.GetString(responseByteArray);
                 }
                 else if (context.Request.HttpMethod.Equals("GET"))
                 {
-                    //add the combination of appId:instanceId as a query parameter for having this as a unique request
-                    fetchResponseURL += "&clipboardKey=" + appID + "&instanceId=" + instanceId;
-                    foreach (var queryKey in context.Request.QueryString.AllKeys)
+                    String requestURL = "";
+                    if (context.Request.PathInfo.Equals("/login"))
                     {
-                        fetchResponseURL += "&" + queryKey + "=" + context.Request.QueryString[queryKey];
+                        requestURL = MARKETPLACE_PATH + "/login";
                     }
-                    WebClient askFast = new WebClient();
-                    var responseByteArray = askFast.DownloadData(fetchResponseURL);
+                    else
+                    {
+                        //add the combination of appId:instanceId as a query parameter for having this as a unique request
+                        askFast.QueryString.Add("clipboardKey", appID);
+                        askFast.QueryString.Add("instanceId", instanceId);
+                        requestURL = fetchResponseURL;
+                    }
+                    var responseByteArray = askFast.DownloadData(requestURL);
                     response = System.Text.Encoding.Default.GetString(responseByteArray);
                 }
             }

@@ -13,14 +13,13 @@
     var twitterHeader = "Twitter";
     //header mappings to adapters
     var adapterMappings = {};
+    var X_SESSIONID = "";
 
     // The initialize function must be run each time a new page is loaded
     Office.initialize = function (reason) {
         $(document).ready(function () {
             app.initialize();
-            if ($('#send').val() == "") {
-                $('#send').attr("disabled", "disabled");
-            }
+            enableSendButton();
             $('#message').keyup(enableSendButton);
             $('#send').click(getDataFromSelection);
             //disable the extras div
@@ -33,6 +32,10 @@
             $('#broadsoft').click(toggleAdapterTypes);
             $('#sms').click(toggleAdapterTypes);
             $('#twitter').click(toggleAdapterTypes);
+            $('#login').click(doLogin);
+            enableLoginButton();
+            $('#username').keyup(enableLoginButton);
+            $('#password').keyup(enableLoginButton);
 
             //create toggle effect for tabs
             $('#myTabs a').click(function (e) {
@@ -43,6 +46,27 @@
         });
     };
 
+    //perform login
+    function doLogin() {
+        if ($('#username').val() != null && $('#password').val() != null) {
+            app.showNotification("Signing in into " + $('#username').val(), "");
+            $.ajax({
+                cache: false,
+                crossDomain: true,
+                contentType: 'application/json; charset=utf-8',
+                url: '/App/Handler1.ashx/login?username=' + $('#username').val() + "&password=" + CryptoJS.MD5($('#password').val()).toString(),
+                type: 'GET',
+                dataType: 'json'
+            }).success(function (response) {
+                X_SESSIONID = response["X-SESSION_ID"];
+                app.showNotification("Success", "Login successful");
+                console.log("Success", response.statusText);
+            }).error(function (response) {
+                app.showNotification("Error", response.responseText);
+                console.log("Error", response.statusText);
+            });
+        }
+    }
     //enable extras if text message (apart from twitter) is selected
     function toggleAdapterTypes() {
         if ($('#xmpp').is(":checked") || $('#sms').is(":checked") || $('#mail').is(":checked")) {
@@ -67,17 +91,23 @@
 
     // Reads data from current document selection and displays a notification
     function getDataFromSelection() {
-        updateHeaders();
-        //fix a binding element to the addresses selected
-        Office.context.document.bindings.addFromSelectionAsync(Office.BindingType.Matrix, { id: 'addresses' },
-            function (result) {
-                if (result.status === Office.AsyncResultStatus.Succeeded) {
-                    result.value.getDataAsync(getDataFromBinding);
-                }
-                else {
-                    app.showNotification(result.error.name, result.error.message)
-                }
-            });
+        if (X_SESSIONID != null && X_SESSIONID != "") {
+            updateHeaders();
+            //fix a binding element to the addresses selected
+            Office.context.document.bindings.addFromSelectionAsync(Office.BindingType.Matrix, { id: 'addresses' },
+                function (result) {
+                    if (result.status === Office.AsyncResultStatus.Succeeded) {
+                        result.value.getDataAsync(getDataFromBinding);
+                    }
+                    else {
+                        app.showNotification(result.error.name, result.error.message)
+                    }
+                });
+        }
+        else {
+            app.showNotification("Authentication error", "Please login..");
+            $('a[href="#loginTab"]').tab('show');
+        }
     };
 
     function getDataFromBinding(result) {
@@ -101,6 +131,9 @@
                 cache: false,
                 crossDomain: true,
                 contentType: 'application/json; charset=utf-8',
+                beforeSend: function (request) {
+                    request.setRequestHeader("X-SESSION_ID", X_SESSIONID);
+                },
                 url: '/App/Handler1.ashx?' + 'questionType=' + $('#questionType').val() + appendHeaders(),
                 type: 'POST',
                 dataType: 'json',
@@ -127,7 +160,7 @@
             for (var columnCount = 0; columnCount < result[rowCount].length; columnCount++) {
                 //check if the column is ignored
                 if (!shouldColumnBeIgnored(result[0][columnCount])) {
-                    if(columnCount != 0){
+                    if (columnCount != 0) {
                         resultCSV += ",";
                     }
                     resultCSV += result[rowCount][columnCount];
@@ -140,10 +173,15 @@
         return resultCSV;
     }
 
-    //converts the selected excel data to csv format
     function enableSendButton(result) {
         if ($('#message').val() != "") {
             $('#send').removeAttr("disabled");
+        }
+    };
+
+    function enableLoginButton(result) {
+        if ($('#username').val() != "" && $('#password').val() != "") {
+            $('#login').removeAttr("disabled");
         }
     };
 
@@ -170,7 +208,7 @@
     }
 
     //update the default columnHeaders if changes in settings tab
-    function updateHeaders(){
+    function updateHeaders() {
         //update the headers
         smsHeader = $('#smsHeader').val() != smsHeader ? $('#smsHeader').val() : smsHeader;
         fixedLineHeader = $('#fixedLineHeader').val() != fixedLineHeader ? $('#fixedLineHeader').val() : fixedLineHeader;
@@ -193,8 +231,8 @@
         if (adapterMappings[header] == null) {
             return false;
         }
-        else if(adapterMappings[header] != null 
-            && $.inArray(adapterMappings[header], getChannelsChecked()) != -1){
+        else if (adapterMappings[header] != null
+            && $.inArray(adapterMappings[header], getChannelsChecked()) != -1) {
             return false;
         }
         return true;
@@ -214,21 +252,29 @@
 
     //generates the report on the excel sheet for the reponse to the questions seen
     function genereateReport() {
-        app.showNotification("Generating report..");
-        $.ajax({
-            contentType: 'application/json; charset=utf-8',
-            url: '/App/Handler1.ashx?' + 'questionType=' + $('#questionType').val() 
-                + appendHeaders(),
-            type: 'GET',
-            dataType: 'json'
-        }).success(function (response) {
-            writeReportOnSheet(response);
-            app.showNotification("Success", response.statusText);
-            console.log("Success", response.statusText);
-        }).error(function (response) {
-            app.showNotification("Error", response.responseText);
-            console.log("Error", response.statusText);
-        });
+        if (X_SESSIONID != null && X_SESSIONID != "") {
+            app.showNotification("Generating report..");
+            $.ajax({
+                contentType: 'application/json; charset=utf-8',
+                beforeSend: function (request) {
+                    request.setRequestHeader("X-SESSION_ID", X_SESSIONID);
+                },
+                url: '/App/Handler1.ashx',
+                type: 'GET',
+                dataType: 'json'
+            }).success(function (response) {
+                writeReportOnSheet(response);
+                app.showNotification("Success", response.statusText);
+                console.log("Success", response.statusText);
+            }).error(function (response) {
+                app.showNotification("Error", response.responseText);
+                console.log("Error", response.statusText);
+            });
+        }
+        else {
+            app.showNotification("Authentication error", "Please login..");
+            $('a[href="#loginTab"]').tab('show');
+        }
     }
 
     //function to write report on the sheet

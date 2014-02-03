@@ -71,6 +71,7 @@
     <Content Include="ask-bootstrap\public\src\css\fonts\entypo.eot" />
     <Content Include="ask-bootstrap\public\src\css\fonts\entypo.ttf" />
     <Content Include="ask-bootstrap\public\src\css\fonts\entypo.woff" />
+    <Content Include="ask-bootstrap\public\src\js\cryptojs.js" />
     <Content Include="ask-bootstrap\public\src\js\libs\bootstrap\bootstrap.min.js" />
     <Content Include="ask-bootstrap\public\src\less\datepicker.less" />
     <None Include="Web.Debug.config">
