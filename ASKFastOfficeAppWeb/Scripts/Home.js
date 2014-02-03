@@ -2,13 +2,17 @@
 
 (function () {
     "use strict";
-    var phoneHeader = "Phone";
+    //default headers
+    var smsHeader = "Mobile";
+    var fixedLineHeader = "Fixed Line";
     var firstNameHeader = "First Name";
     var lastNameHeaderHeader = "Last Name";
     var emailHeader = "Email";
     var xmppHeader = "XMPP";
     var facebookHeader = "Facebook";
     var twitterHeader = "Twitter";
+    //header mappings to adapters
+    var adapterMappings = {};
 
     // The initialize function must be run each time a new page is loaded
     Office.initialize = function (reason) {
@@ -63,11 +67,15 @@
 
     // Reads data from current document selection and displays a notification
     function getDataFromSelection() {
+        updateHeaders();
         //fix a binding element to the addresses selected
         Office.context.document.bindings.addFromSelectionAsync(Office.BindingType.Matrix, { id: 'addresses' },
             function (result) {
                 if (result.status === Office.AsyncResultStatus.Succeeded) {
                     result.value.getDataAsync(getDataFromBinding);
+                }
+                else {
+                    app.showNotification(result.error.name, result.error.message)
                 }
             });
     };
@@ -101,10 +109,10 @@
                 },
                 data: JSON.stringify(json)
             }).success(function (response) {
-                app.showNotification("Success", response.statusText);
+                app.showNotification("Success", response.responseText);
                 console.log("Success", response.statusText);
             }).error(function (response) {
-                app.showNotification("Error", response.statusText);
+                app.showNotification("Error", response.responseText);
                 console.log("Error", response.statusText);
             });
         } else {
@@ -117,18 +125,17 @@
         var resultCSV = '';
         for (var rowCount = 0; rowCount < result.length; rowCount++) {
             for (var columnCount = 0; columnCount < result[rowCount].length; columnCount++) {
-                resultCSV += result[rowCount][columnCount];
-                if (columnCount != result[rowCount].length - 1) {
-                    resultCSV += ",";
+                //check if the column is ignored
+                if (!shouldColumnBeIgnored(result[0][columnCount])) {
+                    if(columnCount != 0){
+                        resultCSV += ",";
+                    }
+                    resultCSV += result[rowCount][columnCount];
                 }
             }
             if (rowCount != result.length - 1) {
                 resultCSV += "\n";
             }
-        }
-        //check if a single cell is selected i.e one row and one column range
-        if (result.length == 1 && result[0].length == 1) {
-
         }
         return resultCSV;
     }
@@ -142,7 +149,7 @@
 
     //get all the channels selected
     function getChannelsChecked() {
-        var resultChannels = new Object();
+        var resultChannels = new Array();
         var channelCounter = 0;
         if ($('#xmpp').is(":checked")) {
             resultChannels[channelCounter++] = $('#xmpp').val();
@@ -162,11 +169,43 @@
         return resultChannels;
     }
 
+    //update the default columnHeaders if changes in settings tab
+    function updateHeaders(){
+        //update the headers
+        smsHeader = $('#smsHeader').val() != smsHeader ? $('#smsHeader').val() : smsHeader;
+        fixedLineHeader = $('#fixedLineHeader').val() != fixedLineHeader ? $('#fixedLineHeader').val() : fixedLineHeader;
+        firstNameHeader = $('#firstNameHeader').val() != firstNameHeader ? $('#firstNameHeader').val() : firstNameHeader;
+        lastNameHeaderHeader = $('#lastNameHeader').val() != lastNameHeaderHeader ? $('#lastNameHeader').val() : lastNameHeaderHeader;
+        emailHeader = $('#emailHeader').val() != emailHeader ? $('#emailHeader').val() : emailHeader;
+        xmppHeader = $('#xmppHeader').val() != xmppHeader ? $('#xmppHeader').val() : xmppHeader;
+        twitterHeader = $('#twitterHeader').val() != twitterHeader ? $('#twitterHeader').val() : twitterHeader;
+        //update the adapterMappings
+        adapterMappings[fixedLineHeader] = "broadsoft";
+        adapterMappings[smsHeader] = "sms";
+        adapterMappings[xmppHeader] = "xmpp";
+        adapterMappings[emailHeader] = "mail";
+        adapterMappings[twitterHeader] = "twitter";
+    }
+
+    //returns true or false based on the mediums selected in the checkbox: adapterTypes
+    function shouldColumnBeIgnored(header) {
+        //if column is not part of adapterMappings include it. eg firstName, lastName
+        if (adapterMappings[header] == null) {
+            return false;
+        }
+        else if(adapterMappings[header] != null 
+            && $.inArray(adapterMappings[header], getChannelsChecked()) != -1){
+            return false;
+        }
+        return true;
+    }
+
     //returns a string value of all the header query parameters added
     function appendHeaders() {
         return "&firstName=" + encodeURIComponent(firstNameHeader) +
             "&lastName=" + encodeURIComponent(lastNameHeaderHeader) +
-            "&phoneHeader=" + encodeURIComponent(phoneHeader) +
+            "&smsHeader=" + encodeURIComponent(smsHeader) +
+            "&callHeader=" + encodeURIComponent(fixedLineHeader) +
             "&emailHeader=" + encodeURIComponent(emailHeader) +
             "&xmppHeader=" + encodeURIComponent(xmppHeader) +
             "&facebookHeader=" + encodeURIComponent(facebookHeader) +
@@ -175,9 +214,11 @@
 
     //generates the report on the excel sheet for the reponse to the questions seen
     function genereateReport() {
+        app.showNotification("Generating report..");
         $.ajax({
             contentType: 'application/json; charset=utf-8',
-            url: '/App/Handler1.ashx?' + 'questionType=' + $('#questionType').val() + appendHeaders(),
+            url: '/App/Handler1.ashx?' + 'questionType=' + $('#questionType').val() 
+                + appendHeaders(),
             type: 'GET',
             dataType: 'json'
         }).success(function (response) {
@@ -185,7 +226,7 @@
             app.showNotification("Success", response.statusText);
             console.log("Success", response.statusText);
         }).error(function (response) {
-            app.showNotification("Error", response.statusText);
+            app.showNotification("Error", response.responseText);
             console.log("Error", response.statusText);
         });
     }
@@ -195,23 +236,25 @@
         if (response != null && response.length != 0) {
             var data = new Object();
             var rowCounter = 0;
-            data[rowCounter] = ["Timestamp", "Question", "Responder", "Response"];
+            data[rowCounter] = ["Timestamp", "Question Type", "Question", "Responder", "Response"];
             for (; rowCounter < response.length; rowCounter++) {
                 var questionResponse = response[rowCounter];
                 var rowData = new Object();
-                rowData[0] = questionResponse["timestamp"];
+                rowData[0] = getStringDateFromMilliseconds(questionResponse["timestamp"]);
                 var questionMap = questionResponse["clipboardMap"];
                 rowData[1] = "";
+                rowData[2] = "";
                 if (questionMap["question"] != null) {
                     var question = JSON.parse((questionMap["question"]));
+                    rowData[1] = question["type"]
                     var questionText = question["question_text"];
                     if (questionText != null) {
                         questionText = questionText.replace('text://', '');
                     }
-                    rowData[1] = decodeURIComponent(questionText);
+                    rowData[2] = decodeURIComponent(questionText);
                 }
-                rowData[2] = questionMap["responder"];
-                rowData[3] = questionMap["answer_text"];
+                rowData[3] = questionMap["responder"];
+                rowData[4] = questionMap["answer_text"];
                 data[rowCounter + 1] = rowData;
             }
             Office.context.document.setSelectedDataAsync(data, { coercionType: Office.CoercionType.Matrix });
@@ -219,5 +262,10 @@
         else {
             app.showNotification("Info", "No reports found.")
         }
+    }
+
+    function getStringDateFromMilliseconds(milliseconds) {
+        var date = new Date(milliseconds);
+        return date.toDateString() + " " + date.toLocaleTimeString();
     }
 })();

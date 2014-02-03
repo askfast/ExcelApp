@@ -26,14 +26,15 @@
 </head>
 <body>
     <!-- Page content -->
-    <!--<div id="content-header" style="background-color: white; height: auto">
-        <div class="padding" style="margin-bottom:0px;padding-left: 35px">
+    <div style="background-color: white; height: auto">
+        <div style="margin-bottom:0px;padding-left: 35px">
             <img src="../../Images/logo.png" alt="ASK-Fast" style="height: 30px">
         </div>
-    </div>-->
+    </div>
     <ul class="nav nav-tabs" id="myTabs">
         <li class="active"><a href="#homeTab">Home</a></li>
         <li><a href="#reportTab">Reports</a></li>
+        <li><a href="#settingsTab">Settings</a></li>
     </ul>
     <div id='content' class="tab-content">
         <div class="tab-pane active" id="homeTab">
@@ -87,12 +88,12 @@
                     </td>
                 </tr>
             </table>
-            <p><strong>Step 5: </strong> Please select your broadcast medium(s).</p>
-            <input name="adapterTypes" id="xmpp" type="checkbox" value="xmpp" />XMPP
-            <input name="adapterTypes" id="mail" type="checkbox" value="mail" />E-Mail
-            <input name="adapterTypes" id="broadsoft" type="checkbox" value="broadsoft" />Call
-            <input name="adapterTypes" id="sms" type="checkbox" value="sms" />SMS
-            <input name="adapterTypes" id="twitter" type="checkbox" value="twitter" />Twitter
+            <p><strong>Step 5: </strong> Please uncheck if you want to ignore any address columns.</p>
+            <input name="adapterTypes" id="xmpp" type="checkbox" value="xmpp" checked />XMPP
+            <input name="adapterTypes" id="mail" type="checkbox" value="mail" checked />E-Mail
+            <input name="adapterTypes" id="broadsoft" type="checkbox" value="broadsoft" checked />Call
+            <input name="adapterTypes" id="sms" type="checkbox" value="sms" checked />SMS
+            <input name="adapterTypes" id="twitter" type="checkbox" value="twitter" checked />Twitter
             <p id="extrasHeader"><strong>Step 6: </strong> Attach your name to your message.</p>
             <table id="extras" border="0">
                 <tr id="senderIdRow">
@@ -113,6 +114,39 @@
             <p><strong>Step 1:</strong> Select a cell where the report has to start.</p>
             <p id="broadcastMessage"><strong>Step 2: </strong> Generate report.</p>
             <button type="button" id="generate">Generate!</button>
+        </div>
+        <div class="tab-pane" id="settingsTab">
+            <p> We parse the columns based on the following headers.</p>
+            <table id="columnHeaders" border="0">
+                <tr>
+                    <td>First name Header: </td>
+                    <td><input type="text" id="firstNameHeader" placeholder="Default: First Name" style="min-width:150px" value="First Name"></td>
+                </tr>
+                <tr>
+                    <td>Last name Header: </td>
+                    <td><input type="text" id="lastNameHeader" placeholder="Default: Last Name" style="min-width:150px" value="Last Name"></td>
+                </tr>
+                <tr>
+                    <td>XMPP Header: </td>
+                    <td><input type="text" id="xmppHeader" placeholder="Default: XMPP" style="min-width:150px" value="XMPP"></td>
+                </tr>
+                <tr>
+                    <td>SMS Headers: </td>
+                    <td><input type="text" id="smsHeader" placeholder="Default: Mobile" style="min-width:150px" value="Mobile"></td>
+                </tr>
+                <tr>
+                    <td>Call Headers: </td>
+                    <td><input type="text" id="fixedLineHeader" placeholder="Default: Fixed Line" style="min-width:150px" value="Fixed Line"></td>
+                </tr>
+                <tr>
+                    <td>Email Header: </td>
+                    <td><input type="text" id="emailHeader" placeholder="Default: Email" style="min-width:150px" value="Email"></td>
+                </tr>
+                <tr>
+                    <td>Twitter Header: </td>
+                    <td><input type="text" id="twitterHeader" placeholder="Default: Twitter" style="min-width:150px" value="Twitter"></td>
+                </tr>
+            </table>
         </div>
     </div>
 </body>

@@ -13,44 +13,53 @@ namespace ASKFastOfficeAppWeb.App
     /// </summary>
     public class Handler1 : IHttpHandler
     {
-        static String appID = "EXCEL_OFFICE_APP";
-        static String baseUrl = "http://shravan1.askfastmarket1.appspot.com/products/broadcastnew/stream?username=apptestoneline&password=eadeb77d8fba90b42b32b7de13e8aaa6";
-        //static string fetchResponseURL = "http://shravan1.askfastmarket1.appspot.com/resource/examples/clipboard?username=apptestoneline&password=eadeb77d8fba90b42b32b7de13e8aaa6";
-        static string fetchResponseURL = "http://127.0.0.1:8888/resource/examples/clipboard?username=apptestoneline&password=eadeb77d8fba90b42b32b7de13e8aaa6";
         public void ProcessRequest(HttpContext context)
         {
+            String appID = "EXCEL_OFFICE_APP";
+            String baseUrl = "http://askfastmarket1.appspot.com/products/broadcastnew/stream?username=apptestoneline&password=eadeb77d8fba90b42b32b7de13e8aaa6";
+            String fetchResponseURL = "http://askfastmarket1.appspot.com/resource/examples/clipboard?username=apptestoneline&password=eadeb77d8fba90b42b32b7de13e8aaa6";
+            //static string fetchResponseURL = "http://127.0.0.1:8888/resource/examples/clipboard?username=apptestoneline&password=eadeb77d8fba90b42b32b7de13e8aaa6";
+
             var response = "";
-            var instanceId = HttpUtility.UrlEncode(context.Request.LogonUserIdentity.Name 
+            var instanceId = HttpUtility.UrlEncode(context.Request.LogonUserIdentity.Name
                 + "_" + context.Request.LogonUserIdentity.Owner.Value);
             var appIdParameter = "appId=" + appID + ":" + instanceId;
-            if (context.Request.HttpMethod.Equals("POST"))
+            try
             {
-                String payload = null;
-                foreach (var queryKey in context.Request.QueryString.AllKeys)
+                if (context.Request.HttpMethod.Equals("POST"))
                 {
-                    baseUrl += "&" + queryKey + "=" + context.Request.QueryString[queryKey];
+                    String payload = null;
+                    foreach (var queryKey in context.Request.QueryString.AllKeys)
+                    {
+                        baseUrl += "&" + queryKey + "=" + context.Request.QueryString[queryKey];
+                    }
+                    //add the combination of appId:instanceId as a query parameter for having this as a unique request
+                    baseUrl += "&" + appIdParameter;
+                    using (var reader = new StreamReader(context.Request.InputStream))
+                    {
+                        payload = reader.ReadToEnd();
+                    }
+                    WebClient askFast = new WebClient();
+                    var responseByteArray = askFast.UploadData(baseUrl, Encoding.ASCII.GetBytes(payload));
+                    response = System.Text.Encoding.Default.GetString(responseByteArray);
                 }
-                //add the combination of appId:instanceId as a query parameter for having this as a unique request
-                baseUrl += "&" + appIdParameter;
-                using (var reader = new StreamReader(context.Request.InputStream))
+                else if (context.Request.HttpMethod.Equals("GET"))
                 {
-                    payload = reader.ReadToEnd();
+                    //add the combination of appId:instanceId as a query parameter for having this as a unique request
+                    fetchResponseURL += "&clipboardKey=" + appID + "&instanceId=" + instanceId;
+                    foreach (var queryKey in context.Request.QueryString.AllKeys)
+                    {
+                        fetchResponseURL += "&" + queryKey + "=" + context.Request.QueryString[queryKey];
+                    }
+                    WebClient askFast = new WebClient();
+                    var responseByteArray = askFast.DownloadData(fetchResponseURL);
+                    response = System.Text.Encoding.Default.GetString(responseByteArray);
                 }
-                WebClient askFast = new WebClient();
-                var responseByteArray = askFast.UploadData(baseUrl, Encoding.ASCII.GetBytes(payload));
-                response = System.Text.Encoding.Default.GetString(responseByteArray);
             }
-            else if(context.Request.HttpMethod.Equals("GET"))
+            catch (Exception ex)
             {
-                //add the combination of appId:instanceId as a query parameter for having this as a unique request
-                fetchResponseURL += "&clipboardKey=" + appID + "&instanceId=" + instanceId;
-                foreach (var queryKey in context.Request.QueryString.AllKeys)
-                {
-                    fetchResponseURL += "&" + queryKey + "=" + context.Request.QueryString[queryKey];
-                }
-                WebClient askFast = new WebClient();
-                var responseByteArray = askFast.DownloadData(fetchResponseURL);
-                response = System.Text.Encoding.Default.GetString(responseByteArray);
+                context.Response.StatusCode = 500;
+                response = "Error: " + ex.Message;
             }
             context.Response.ContentType = "text/plain";
             context.Response.Write(response);
