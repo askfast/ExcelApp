@@ -122,13 +122,13 @@
             json["csvStream"] = csvData;
             var broadcastNode = new Object();
             var adapterList = new Object();
-            adapterList["EMAIL"] = "bb3fe5e0-84de-11e3-998f-00007f000001";
-            broadcastNode["adapterList"] = adapterList;
-            broadcastNode["senderName"] = $('#senderId').val();
+            broadcastNode["senderName"] = $('#senderId').val() != null ?
+                $('#senderId').val() : "ASKFast4Excel";
             broadcastNode["message"] = $('#message').val();
             broadcastNode["retryMethod"] = 'MANUAL';
             broadcastNode["broadcastName"] = 'Broadcast from ASK-Fast Excel App';
-            broadcastNode["emailSubject"] = $('#subject').val();
+            broadcastNode["emailSubject"] = $('#subject').val() != null ?
+                $('#subject').val() : 'Broadcast from ASK-Fast Excel App';
             broadcastNode["language"] = $('#language').val();
             json["broadcast"] = broadcastNode;
             app.showNotification("Sending your request...", "");
