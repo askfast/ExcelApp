@@ -14,7 +14,7 @@
     //header mappings to adapters
     var adapterMappings = {};
     var X_SESSIONID = "";
-    var lastTabSelected;
+    var lastTabSelected = "#homeTab"; //default it to hte active tab
 
     // The initialize function must be run each time a new page is loaded
     Office.initialize = function (reason) {
@@ -40,9 +40,11 @@
 
             //create toggle effect for tabs
             $('#myTabs a').click(function (e) {
-                e.preventDefault()
-                $(this).tab('show')
-                lastTabSelected = $(e.target).attr('href')
+                e.preventDefault();
+                $(this).tab('show');
+                if ($(e.target).attr('href') != '#loginTab') {
+                    lastTabSelected = $(e.target).attr('href');
+                }
             });
             $('#generate').click(genereateReport);
         });
@@ -147,8 +149,7 @@
                 },
                 data: JSON.stringify(json)
             }).success(function (response) {
-                app.showNotification("Success", response.responseText);
-                console.log("Success", response.statusText);
+                showFailures(response);
             }).error(function (response) {
                 app.showNotification("Error", response.responseText);
                 console.log("Error", response.statusText);
@@ -189,6 +190,24 @@
             $('#login').removeAttr("disabled");
         }
     };
+
+    //show failures seen while broadcasting
+    function showFailures(response) {
+        if (response['broadcast'] && response['broadcast']['addresses']) {
+            var failureMessage = "";
+            for (var selectedMedium in response['broadcast']['addresses']) {
+                for (var messageIndex in response['broadcast']['addresses'][selectedMedium]) {
+                    var message = response['broadcast']['addresses'][selectedMedium][messageIndex]['responseMessage'];
+                    if (message) {
+                        failureMessage += message + '\n';
+                    }
+                }
+            }
+            if (failureMessage != "") {
+                app.showNotification("Details", failureMessage);
+            }
+        }
+    }
 
     //get all the channels selected
     function getChannelsChecked() {
