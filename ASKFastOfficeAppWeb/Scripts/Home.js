@@ -14,6 +14,7 @@
     //header mappings to adapters
     var adapterMappings = {};
     var X_SESSIONID = "";
+    var lastTabSelected;
 
     // The initialize function must be run each time a new page is loaded
     Office.initialize = function (reason) {
@@ -41,6 +42,7 @@
             $('#myTabs a').click(function (e) {
                 e.preventDefault()
                 $(this).tab('show')
+                lastTabSelected = $(e.target).attr('href')
             });
             $('#generate').click(genereateReport);
         });
@@ -61,6 +63,9 @@
                 X_SESSIONID = response["X-SESSION_ID"];
                 app.showNotification("Success", "Login successful");
                 console.log("Success", response.statusText);
+                if (lastTabSelected) {
+                    $('a[href="' + lastTabSelected + '"]').tab('show');
+                }
             }).error(function (response) {
                 app.showNotification("Error", response.responseText);
                 console.log("Error", response.statusText);
@@ -253,7 +258,7 @@
     //generates the report on the excel sheet for the reponse to the questions seen
     function genereateReport() {
         if (X_SESSIONID != null && X_SESSIONID != "") {
-            app.showNotification("Generating report..");
+            app.showNotification("Generating report..", "");
             $.ajax({
                 contentType: 'application/json; charset=utf-8',
                 beforeSend: function (request) {
@@ -282,14 +287,17 @@
         if (response != null && response.length != 0) {
             var data = new Object();
             var rowCounter = 0;
-            data[rowCounter] = ["Timestamp", "Question Type", "Question", "Responder", "Response"];
+            data[rowCounter] = ["Timestamp", "Question Type", "Question", "Responder", "Responder Name",
+                "Status", "Response"];
             for (; rowCounter < response.length; rowCounter++) {
                 var questionResponse = response[rowCounter];
                 var rowData = new Object();
+                //initialize with empty values
+                for (var columnCounter = 0; columnCounter < data[0].length; columnCounter++) {
+                    rowData[columnCounter] = "";
+                }
                 rowData[0] = getStringDateFromMilliseconds(questionResponse["timestamp"]);
                 var questionMap = questionResponse["clipboardMap"];
-                rowData[1] = "";
-                rowData[2] = "";
                 if (questionMap["question"] != null) {
                     var question = JSON.parse((questionMap["question"]));
                     rowData[1] = question["type"]
@@ -300,7 +308,9 @@
                     rowData[2] = decodeURIComponent(questionText);
                 }
                 rowData[3] = questionMap["responder"];
-                rowData[4] = questionMap["answer_text"];
+                rowData[4] = questionMap["responder_name"];
+                rowData[5] = questionMap["status"];
+                rowData[6] = questionMap["answer_text"];
                 data[rowCounter + 1] = rowData;
             }
             Office.context.document.setSelectedDataAsync(data, { coercionType: Office.CoercionType.Matrix });
