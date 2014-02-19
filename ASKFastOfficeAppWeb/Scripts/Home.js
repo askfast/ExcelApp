@@ -316,7 +316,8 @@
         if (response != null && response.length != 0) {
             var data = new Array();
             var rowCounter = 0;
-            data[rowCounter] = ["Timestamp", "Question Type", "Question", "Responder", "Medium", "Responder Name",
+            var dataRowCounter = 1; //starts the data from the first row.
+            data[0] = ["Timestamp", "Question Type", "Question", "Responder", "Medium", "Responder Name",
                 "Status", "Response"];
             for (; rowCounter < response.length; rowCounter++) {
                 var questionResponse = response[rowCounter];
@@ -347,7 +348,7 @@
                 rowData[5] = questionMap["responder_name"];
                 rowData[6] = questionMap["status"];
                 rowData[7] = questionMap["answer_text"];
-                data[rowCounter + 1] = rowData;
+                data[dataRowCounter++] = rowData;
             }
             if (data.length > 1) {
                 Office.context.document.setSelectedDataAsync(data, { coercionType: Office.CoercionType.Matrix });
@@ -368,10 +369,10 @@
 
     function toggleMatchingQuestionText() {
         if ($('#matchQuestionCheckBox').is(":checked")) {
-            $('#matchingQuestionText').text("Fetch reports for current message.");
+            $('#matchingQuestionText').text("Fetchs reports for current message.");
         }
         else {
-            $('#matchingQuestionText').text("Fetch all reports.");
+            $('#matchingQuestionText').text("Fetchs all reports.");
         }
     }
 })();
