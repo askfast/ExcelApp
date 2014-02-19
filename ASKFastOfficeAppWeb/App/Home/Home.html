@@ -116,12 +116,14 @@
             </table>
             <p id="broadcastMessage"><strong>Step 6: </strong> Send your message.</p>
             <button type="button" id="send" disabled>Send!</button>
+            <hr />
             <p>Check out our developer friendly APIs and other products at:</p>
             <a href="www.ask-fast.com">www.ask-fast.com</a>
         </div>
         <div class="tab-pane" id="reportTab">
             <p><strong>Step 1:</strong> Select a cell where the report has to start. Make sure </p>
-            <p><strong>Step 2: </strong> <input id="matchQuestionCheckBox" type="checkbox" checked /><label id="matchingQuestionText" for="matchQuestionCheckBox"></label></p>
+            <p style="min-width:80px"><strong>Step 2: </strong> Report Details: <br>
+            <input id="matchQuestionCheckBox" type="checkbox" checked /><label id="matchingQuestionText" for="matchQuestionCheckBox"></label></p>
             <p><strong>Step 3: </strong> Generate report.</p>
             <button type="button" id="generate">Generate!</button>
         </div>
@@ -166,10 +168,16 @@
                         <td><input type="text" id="username" placeholder="Enter your username" style="min-width:150px" value="apptestoneline"></td>
                     </tr>
                     <tr>
-                        <td>Password: </td>
+                        <td><strong>Password: </strong></td>
                         <td><input type="password" id="password" placeholder="Enter your password" style="min-width:150px"></td>
                     </tr>
+                    <tr>
+                        <td style="min-width:80px">
+                            <input id="autoLogon" value="autologon" type="checkbox" checked />Auto login
+                        </td>
+                    </tr>
                 </table>
+                <br />
                 <button type="submit" id="login" disabled>Login</button>
             </form>
         </div>

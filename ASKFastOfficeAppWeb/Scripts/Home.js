@@ -20,6 +20,15 @@
     Office.initialize = function (reason) {
         $(document).ready(function () {
             app.initialize();
+            //login if username and password is enabled already
+            if (supports_html5_storage()) {
+                $('#username').val(localStorage.getItem("username"));
+                $('#password').val(localStorage.getItem("password"));
+                if ($('#username').val() != null && $('#password').val() != null
+                    && $('#autoLogon').is(":checked")) {
+                    doLogin();
+                }
+            }
             enableSendButton();
             $('#message').keyup(enableSendButton);
             $('#send').click(getDataFromSelection);
@@ -58,6 +67,11 @@
     //perform login
     function doLogin() {
         if ($('#username').val() != null && $('#password').val() != null) {
+            //store the page values in local storage
+            if (supports_html5_storage()) {
+                localStorage.setItem("username", $('#username').val());
+                localStorage.setItem("password", $('#password').val());
+            }
             app.showNotification("Signing in into " + $('#username').val(), "");
             $.ajax({
                 cache: false,
@@ -378,6 +392,15 @@
         }
         else {
             $('#matchingQuestionText').text("Fetchs all reports.");
+        }
+    }
+
+    //store the userName and password in the localstorage
+    function supports_html5_storage() {
+        try {
+            return 'localStorage' in window && window['localStorage'] !== null;
+        } catch (e) {
+            return false;
         }
     }
 })();
