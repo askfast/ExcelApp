@@ -57,3 +57,23 @@
     top: 5px;
     cursor: pointer;
 }
+
+input[type=text] {
+    min-height: 25px !important;
+    padding: 3px !important;
+    border: 1px solid silver;
+}
+
+input[type=password] {
+    min-height: 25px !important;
+    padding: 3px !important;
+    border: 1px solid silver;
+}
+
+[placeholder] {
+    font-size: 13px !important;
+}
+
+    [placeholder]:focus::-webkit-input-placeholder {
+        color: #ddd !important;
+    }

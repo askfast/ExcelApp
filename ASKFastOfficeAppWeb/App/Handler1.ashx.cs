@@ -34,6 +34,7 @@ namespace ASKFastOfficeAppWeb.App
                 {
                     askFast.Headers.Add("X-SESSION_ID", context.Request.Headers.Get("X-SESSION_ID"));
                 }
+                //POST operation for performing outbound broadcasts
                 if (context.Request.HttpMethod.Equals("POST"))
                 {
                     String payload = null;
@@ -46,6 +47,7 @@ namespace ASKFastOfficeAppWeb.App
                     var responseByteArray = askFast.UploadData(baseUrl, Encoding.ASCII.GetBytes(payload));
                     response = System.Text.Encoding.Default.GetString(responseByteArray);
                 }
+                //GET oepration to fetch the reports and login
                 else if (context.Request.HttpMethod.Equals("GET"))
                 {
                     String requestURL = "";

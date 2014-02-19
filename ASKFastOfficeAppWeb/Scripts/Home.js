@@ -28,15 +28,20 @@
             $('#extras').hide();
             //event listners for adapters toggle 
             toggleAdapterTypes();
+            toggleMatchingQuestionText();
             $('#xmpp').click(toggleAdapterTypes);
             $('#mail').click(toggleAdapterTypes);
             $('#broadsoft').click(toggleAdapterTypes);
             $('#sms').click(toggleAdapterTypes);
             $('#twitter').click(toggleAdapterTypes);
+            $('#matchQuestionCheckBox').click(toggleMatchingQuestionText);
             $('#login').click(doLogin);
             enableLoginButton();
             $('#username').keyup(enableLoginButton);
             $('#password').keyup(enableLoginButton);
+            $(".nexttab").click(function () {
+                $('a[href="#settingsTab"]').tab('show');
+            });
 
             //create toggle effect for tabs
             $('#myTabs a').click(function (e) {
@@ -79,7 +84,7 @@
         if ($('#xmpp').is(":checked") || $('#sms').is(":checked") || $('#mail').is(":checked")) {
             $('#extras').show();
             $('#extrasHeader').show();
-            $('#broadcastMessage').html('<strong>Step 7: </strong> Broadcast your message.');
+            $('#broadcastMessage').html('<strong>Step 7: </strong> Send your message.');
             if ($('#xmpp').is(":checked") || $('#sms').is(":checked")) {
                 $('#senderIdRow').show();
                 $('#subjectRow').hide();
@@ -206,6 +211,9 @@
             if (failureMessage != "") {
                 app.showNotification("Details", failureMessage);
             }
+            else {
+                app.showNotification("Success", "Message broadcasted successfully!");
+            }
         }
     }
 
@@ -279,11 +287,13 @@
         if (X_SESSIONID != null && X_SESSIONID != "") {
             app.showNotification("Generating report..", "");
             $.ajax({
+                cache: false,
+                crossDomain: true,
                 contentType: 'application/json; charset=utf-8',
                 beforeSend: function (request) {
                     request.setRequestHeader("X-SESSION_ID", X_SESSIONID);
                 },
-                url: '/App/Handler1.ashx',
+                url: '/App/Handler1.ashx/report',
                 type: 'GET',
                 dataType: 'json'
             }).success(function (response) {
@@ -306,7 +316,7 @@
         if (response != null && response.length != 0) {
             var data = new Object();
             var rowCounter = 0;
-            data[rowCounter] = ["Timestamp", "Question Type", "Question", "Responder", "Responder Name",
+            data[rowCounter] = ["Timestamp", "Question Type", "Question", "Responder", "Medium", "Responder Name",
                 "Status", "Response"];
             for (; rowCounter < response.length; rowCounter++) {
                 var questionResponse = response[rowCounter];
@@ -327,9 +337,10 @@
                     rowData[2] = decodeURIComponent(questionText);
                 }
                 rowData[3] = questionMap["responder"];
-                rowData[4] = questionMap["responder_name"];
-                rowData[5] = questionMap["status"];
-                rowData[6] = questionMap["answer_text"];
+                rowData[4] = questionMap["adapterType"];
+                rowData[5] = questionMap["responder_name"];
+                rowData[6] = questionMap["status"];
+                rowData[7] = questionMap["answer_text"];
                 data[rowCounter + 1] = rowData;
             }
             Office.context.document.setSelectedDataAsync(data, { coercionType: Office.CoercionType.Matrix });
@@ -342,5 +353,14 @@
     function getStringDateFromMilliseconds(milliseconds) {
         var date = new Date(milliseconds);
         return date.toDateString() + " " + date.toLocaleTimeString();
+    }
+
+    function toggleMatchingQuestionText() {
+        if ($('#matchQuestionCheckBox').is(":checked")) {
+            $('#matchingQuestionText').text("Fetch reports for current message.");
+        }
+        else {
+            $('#matchingQuestionText').text("Fetch all reports.");
+        }
     }
 })();

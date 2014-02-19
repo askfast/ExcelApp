@@ -23,12 +23,11 @@
     <script src="../../ask-bootstrap/public/src/js/libs/bootstrap/bootstrap.js"></script>
     <script src="../../ask-bootstrap/public/src/js/libs/bootstrap/bootstrap.min.js"></script>
     <script src="../../ask-bootstrap/public/src/js/libs/vendor/prefixfree.min.js"></script>
-
 </head>
 <body>
     <!-- Page content -->
     <div style="background-color: white; height: auto">
-        <div style="margin-bottom:0px;padding-left: 35px">
+        <div style="margin-bottom:0px;padding-left: 5px">
             <img src="../../Images/logo.png" alt="ASK-Fast" style="height: 30px">
         </div>
     </div>
@@ -40,9 +39,13 @@
     </ul>
     <div id='content' class="tab-content">
         <div class="tab-pane active" id="homeTab">
-            <p><strong>Step 1*: </strong> Select a column having addresses.</p>
+            <p>
+                <strong>Step 1*: </strong> Select a column having addresses along with headers. <br />
+                Customize your headers by going to the <a class="nexttab" href="#">Settings</a> tab
+            </p>
             <p><strong>Step 2: </strong> Enter a message to be sent.</p>
-            <input type="text" id="message" placeholder="Your message.." style="min-width:300px">
+            <textarea rows="1" cols="200" id="message" placeholder="Your message.." style="min-width:275px"></textarea>
+            <!--<input type="text" id="message" placeholder="Your message.." style="min-width:275px">-->
             <table border="0">
                 <tr>
                     <td><p><strong>Step 3: </strong> Language: </p> </td>
@@ -83,9 +86,9 @@
                     <td><p><strong>Step 4: </strong> Question type: </p> </td>
                     <td>
                         <select id="questionType" style="width: 100px" class="text_box">
-                            <option value="comment">Comment</option>
+                            <option value="comment">Broadcast</option>
                             <option value="open">Open</option>
-                            <option value="closed">Closed</option>
+                            <option value="closed">Yes/No</option>
                         </select>
                     </td>
                 </tr>
@@ -96,6 +99,10 @@
             <input name="adapterTypes" id="broadsoft" type="checkbox" value="broadsoft" checked />Call
             <input name="adapterTypes" id="sms" type="checkbox" value="sms" checked />SMS
             <input name="adapterTypes" id="twitter" type="checkbox" value="twitter" checked />Twitter
+            <br />
+            <a href="javascript:selectNone()" style="text-align: end">Select None</a>
+            <a href="javascript:selectAll()">Select All</a>
+
             <p id="extrasHeader"><strong>Step 6: </strong> Attach your name to your message.</p>
             <table id="extras" border="0">
                 <tr id="senderIdRow">
@@ -107,14 +114,15 @@
                     <td><input type="text" id="subject" placeholder="Add a subject to your email.." style="min-width:200px"></td>
                 </tr>
             </table>
-            <p id="broadcastMessage"><strong>Step 6: </strong> Broadcast your message.</p>
+            <p id="broadcastMessage"><strong>Step 6: </strong> Send your message.</p>
             <button type="button" id="send" disabled>Send!</button>
             <p>Check out our developer friendly APIs and other products at:</p>
             <a href="www.ask-fast.com">www.ask-fast.com</a>
         </div>
         <div class="tab-pane" id="reportTab">
             <p><strong>Step 1:</strong> Select a cell where the report has to start.</p>
-            <p id="broadcastMessage"><strong>Step 2: </strong> Generate report.</p>
+            <p><strong>Step 2: </strong> <input id="matchQuestionCheckBox" type="checkbox" checked /><label id="matchingQuestionText" for="matchQuestionCheckBox"></label></p>
+            <p><strong>Step 3: </strong> Generate report.</p>
             <button type="button" id="generate">Generate!</button>
         </div>
         <div class="tab-pane" id="settingsTab">
@@ -164,5 +172,22 @@
             <button type="button" id="login" disabled>Login</button>
         </div>
     </div>
+    <script>
+        function selectNone() {
+            $('#xmpp').prop("checked", false);
+            $('#mail').prop("checked", false);
+            $('#broadsoft').prop("checked", false);
+            $('#sms').prop("checked", false);
+            $('#twitter').prop("checked", false);
+        }
+
+        function selectAll() {
+            $('#xmpp').prop("checked", true);
+            $('#mail').prop("checked", true);
+            $('#broadsoft').prop("checked", true);
+            $('#sms').prop("checked", true);
+            $('#twitter').prop("checked", true);
+        }
+    </script>
 </body>
 </html>
