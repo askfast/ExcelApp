@@ -351,7 +351,12 @@
                 data[dataRowCounter++] = rowData;
             }
             if (data.length > 1) {
-                Office.context.document.setSelectedDataAsync(data, { coercionType: Office.CoercionType.Matrix });
+                Office.context.document.setSelectedDataAsync(data, { coercionType: "matrix" },
+                    function (asyncResult) {
+                        if (asyncResult.status === "failed") {
+                            app.showNotification(asyncResult.error.name, asyncResult.error.message);
+                        }
+                    });
             }
             else {
                 app.showNotification("Info", "Reports found but none matching the question: " + $('#message').val());

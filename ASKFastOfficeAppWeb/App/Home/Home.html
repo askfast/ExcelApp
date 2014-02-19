@@ -120,7 +120,7 @@
             <a href="www.ask-fast.com">www.ask-fast.com</a>
         </div>
         <div class="tab-pane" id="reportTab">
-            <p><strong>Step 1:</strong> Select a cell where the report has to start.</p>
+            <p><strong>Step 1:</strong> Select a cell where the report has to start. Make sure </p>
             <p><strong>Step 2: </strong> <input id="matchQuestionCheckBox" type="checkbox" checked /><label id="matchingQuestionText" for="matchQuestionCheckBox"></label></p>
             <p><strong>Step 3: </strong> Generate report.</p>
             <button type="button" id="generate">Generate!</button>
@@ -159,17 +159,19 @@
             </table>
         </div>
         <div class="tab-pane" id="loginTab">
-            <table border="0">
-                <tr>
-                    <td><strong>Username: </strong></td>
-                    <td><input type="text" id="username" placeholder="Enter your username" style="min-width:150px" value="apptestoneline"></td>
-                </tr>
-                <tr>
-                    <td>Password: </td>
-                    <td><input type="password" id="password" placeholder="Enter your password" style="min-width:150px"></td>
-                </tr>
-            </table>
-            <button type="button" id="login" disabled>Login</button>
+            <form>
+                <table border="0">
+                    <tr>
+                        <td><strong>Username: </strong></td>
+                        <td><input type="text" id="username" placeholder="Enter your username" style="min-width:150px" value="apptestoneline"></td>
+                    </tr>
+                    <tr>
+                        <td>Password: </td>
+                        <td><input type="password" id="password" placeholder="Enter your password" style="min-width:150px"></td>
+                    </tr>
+                </table>
+                <button type="submit" id="login" disabled>Login</button>
+            </form>
         </div>
     </div>
     <script>
