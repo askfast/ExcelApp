@@ -314,13 +314,13 @@
     //function to write report on the sheet
     function writeReportOnSheet(response) {
         if (response != null && response.length != 0) {
-            var data = new Object();
+            var data = new Array();
             var rowCounter = 0;
             data[rowCounter] = ["Timestamp", "Question Type", "Question", "Responder", "Medium", "Responder Name",
                 "Status", "Response"];
             for (; rowCounter < response.length; rowCounter++) {
                 var questionResponse = response[rowCounter];
-                var rowData = new Object();
+                var rowData = new Array();
                 //initialize with empty values
                 for (var columnCounter = 0; columnCounter < data[0].length; columnCounter++) {
                     rowData[columnCounter] = "";
@@ -333,8 +333,14 @@
                     var questionText = question["question_text"];
                     if (questionText != null) {
                         questionText = questionText.replace('text://', '');
+                        questionText = decodeURIComponent(questionText);
                     }
-                    rowData[2] = decodeURIComponent(questionText);
+                    rowData[2] = questionText;
+                    //ignore this question if the text doesnt match
+                    if ($('#matchQuestionCheckBox').is(":checked") && $('#message').val()
+                        && $('#message').val() != decodeURIComponent(questionText)) {
+                        continue;
+                    }
                 }
                 rowData[3] = questionMap["responder"];
                 rowData[4] = questionMap["adapterType"];
@@ -343,7 +349,12 @@
                 rowData[7] = questionMap["answer_text"];
                 data[rowCounter + 1] = rowData;
             }
-            Office.context.document.setSelectedDataAsync(data, { coercionType: Office.CoercionType.Matrix });
+            if (data.length > 1) {
+                Office.context.document.setSelectedDataAsync(data, { coercionType: Office.CoercionType.Matrix });
+            }
+            else {
+                app.showNotification("Info", "Reports found but none matching the question: " + $('#message').val());
+            }
         }
         else {
             app.showNotification("Info", "No reports found.")
