@@ -146,6 +146,9 @@
             broadcastNode["senderName"] = $('#senderId').val() != null ?
                 $('#senderId').val() : "ASKFast4Excel";
             broadcastNode["message"] = $('#message').val();
+            if ($('#questionType').val() == 'closed') {
+                broadcastNode["answers"] = ["Yes", "No"];
+            }
             broadcastNode["retryMethod"] = 'MANUAL';
             broadcastNode["broadcastName"] = 'Broadcast from ASK-Fast Excel App';
             broadcastNode["emailSubject"] = $('#subject').val() != null ?
