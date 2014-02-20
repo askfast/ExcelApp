@@ -6,13 +6,13 @@
     var smsHeader = "Mobile";
     var fixedLineHeader = "Fixed Line";
     var firstNameHeader = "First Name";
-    var lastNameHeaderHeader = "Last Name";
+    var lastNameHeader = "Last Name";
     var emailHeader = "Email";
     var xmppHeader = "XMPP";
     var facebookHeader = "Facebook";
     var twitterHeader = "Twitter";
     //header mappings to adapters
-    var adapterMappings = {};
+    var headerMappings = {};
     var X_SESSIONID = "";
     var lastTabSelected = "#homeTab"; //default it to hte active tab
 
@@ -29,6 +29,7 @@
                     doLogin();
                 }
             }
+            loadDataFromLocalStorage();
             enableSendButton();
             $('#message').keyup(enableSendButton);
             $('#send').click(getDataFromSelection);
@@ -119,6 +120,7 @@
     function getDataFromSelection() {
         if (X_SESSIONID != null && X_SESSIONID != "") {
             updateHeaders();
+            storeDataInLocalStorage();
             //fix a binding element to the addresses selected
             Office.context.document.bindings.addFromSelectionAsync(Office.BindingType.Matrix, { id: 'addresses' },
                 function (result) {
@@ -229,7 +231,7 @@
                 app.showNotification("Details", failureMessage);
             }
             else {
-                app.showNotification("Success", "Message broadcasted successfully!");
+                app.showNotification("Success", "Message sent successfully!");
             }
         }
     }
@@ -253,6 +255,9 @@
         if ($('#twitter').is(":checked")) {
             resultChannels[channelCounter++] = $('#twitter').val();
         }
+        //ugly hack: including the firstName and the lastName headers
+        resultChannels[channelCounter++] = "firstName";
+        resultChannels[channelCounter++] = "lastName";
         return resultChannels;
     }
 
@@ -262,27 +267,27 @@
         smsHeader = $('#smsHeader').val() != smsHeader ? $('#smsHeader').val() : smsHeader;
         fixedLineHeader = $('#fixedLineHeader').val() != fixedLineHeader ? $('#fixedLineHeader').val() : fixedLineHeader;
         firstNameHeader = $('#firstNameHeader').val() != firstNameHeader ? $('#firstNameHeader').val() : firstNameHeader;
-        lastNameHeaderHeader = $('#lastNameHeader').val() != lastNameHeaderHeader ? $('#lastNameHeader').val() : lastNameHeaderHeader;
+        lastNameHeader = $('#lastNameHeader').val() != lastNameHeader ? $('#lastNameHeader').val() : lastNameHeader;
         emailHeader = $('#emailHeader').val() != emailHeader ? $('#emailHeader').val() : emailHeader;
         xmppHeader = $('#xmppHeader').val() != xmppHeader ? $('#xmppHeader').val() : xmppHeader;
         twitterHeader = $('#twitterHeader').val() != twitterHeader ? $('#twitterHeader').val() : twitterHeader;
-        //update the adapterMappings
-        adapterMappings[fixedLineHeader] = "broadsoft";
-        adapterMappings[smsHeader] = "sms";
-        adapterMappings[xmppHeader] = "xmpp";
-        adapterMappings[emailHeader] = "mail";
-        adapterMappings[twitterHeader] = "twitter";
+        //update the headerMappings
+        headerMappings["firstName"] = firstNameHeader;
+        headerMappings["lastName"] = lastNameHeader;
+        headerMappings["broadsoft"] = fixedLineHeader;
+        headerMappings["sms"] = smsHeader;
+        headerMappings["xmpp"] = xmppHeader;
+        headerMappings["mail"] = emailHeader;
+        headerMappings["twitter"] = twitterHeader;
     }
 
     //returns true or false based on the mediums selected in the checkbox: adapterTypes
     function shouldColumnBeIgnored(header) {
-        //if column is not part of adapterMappings include it. eg firstName, lastName
-        if (adapterMappings[header] == null) {
-            return false;
-        }
-        else if (adapterMappings[header] != null
-            && $.inArray(adapterMappings[header], getChannelsChecked()) != -1) {
-            return false;
+        for (var headerKey in headerMappings) {
+            if (headerMappings[headerKey] == header
+                && $.inArray(headerKey, getChannelsChecked()) != -1) {
+                return false;
+            }
         }
         return true;
     }
@@ -290,13 +295,12 @@
     //returns a string value of all the header query parameters added
     function appendHeaders() {
         return "&firstName=" + encodeURIComponent(firstNameHeader) +
-            "&lastName=" + encodeURIComponent(lastNameHeaderHeader) +
-            "&smsHeader=" + encodeURIComponent(smsHeader) +
-            "&callHeader=" + encodeURIComponent(fixedLineHeader) +
-            "&emailHeader=" + encodeURIComponent(emailHeader) +
-            "&xmppHeader=" + encodeURIComponent(xmppHeader) +
-            "&facebookHeader=" + encodeURIComponent(facebookHeader) +
-            "&twitterHeader=" + encodeURIComponent(twitterHeader);
+            "&lastName=" + encodeURIComponent(lastNameHeader) +
+            "&smsHeader=" + (($('#sms').is(":checked")) ? encodeURIComponent(smsHeader) : "") +
+            "&callHeader=" + (($('#broadsoft').is(":checked")) ? encodeURIComponent(fixedLineHeader) : "") +
+            "&emailHeader=" + (($('#mail').is(":checked")) ? encodeURIComponent(emailHeader) : "") +
+            "&xmppHeader=" + (($('#xmpp').is(":checked")) ? encodeURIComponent(xmppHeader) : "") +
+            "&twitterHeader=" + (($('#twitter').is(":checked")) ? encodeURIComponent(twitterHeader) : "");
     }
 
     //generates the report on the excel sheet for the reponse to the questions seen
@@ -334,7 +338,7 @@
             var data = new Array();
             var rowCounter = 0;
             var dataRowCounter = 1; //starts the data from the first row.
-            data[0] = ["Timestamp", "Question Type", "Question", "Responder", "Medium", "Responder Name",
+            data[0] = ["Timestamp", "Message Type", "Question", "Responder", "Medium", "Responder Name",
                 "Status", "Response"];
             for (; rowCounter < response.length; rowCounter++) {
                 var questionResponse = response[rowCounter];
@@ -347,7 +351,19 @@
                 var questionMap = questionResponse["clipboardMap"];
                 if (questionMap["question"] != null) {
                     var question = JSON.parse((questionMap["question"]));
-                    rowData[1] = question["type"]
+                    var questionType = "";
+                    switch (question["type"].toString().toLowerCase()) {
+                        case 'comment':
+                            questionType = 'Broadcast';
+                            break;
+                        case 'open':
+                            questionType = 'Open';
+                            break;
+                        case 'closed':
+                            questionType = 'Yes/No';
+                            break;
+                    }
+                    rowData[1] = questionType;
                     var questionText = question["question_text"];
                     if (questionText != null) {
                         questionText = questionText.replace('text://', '');
@@ -404,6 +420,76 @@
             return 'localStorage' in window && window['localStorage'] !== null;
         } catch (e) {
             return false;
+        }
+    }
+
+    //store all the entered info in the local storage
+    function storeDataInLocalStorage() {
+        if (supports_html5_storage()) {
+            localStorage.setItem("message", $('#message').val());
+            localStorage.setItem("questionType", $('#questionType').val());
+            localStorage.setItem("language", $('#language').val());
+            localStorage.setItem("xmpp", $('#xmpp').is(":checked"));
+            localStorage.setItem("mail", $('#mail').is(":checked"));
+            localStorage.setItem("broadsoft", $('#broadsoft').is(":checked"));
+            localStorage.setItem("sms", $('#sms').is(":checked"));
+            localStorage.setItem("twitter", $('#twitter').is(":checked"));
+            localStorage.setItem("senderId", $('#senderId').val());
+            localStorage.setItem("subject", $('#subject').val());
+            localStorage.setItem("firstNameHeader", $('#firstNameHeader').val());
+            localStorage.setItem("lastNameHeader", $('#lastNameHeader').val());
+            localStorage.setItem("xmppHeader", $('#xmppHeader').val());
+            localStorage.setItem("smsHeader", $('#smsHeader').val());
+            localStorage.setItem("fixedLineHeader", $('#fixedLineHeader').val());
+            localStorage.setItem("emailHeader", $('#emailHeader').val());
+            localStorage.setItem("twitterHeader", $('#twitterHeader').val());
+        }
+    }
+
+    //load all saved info from the local storage
+    function loadDataFromLocalStorage() {
+        if (supports_html5_storage()) {
+            $('#message').val(localStorage.getItem("message"));
+            $('#questionType').val(localStorage.getItem("questionType"));
+            $('#language').val(localStorage.getItem("language"));
+            if (localStorage.getItem("xmpp")) {
+                $("#xmpp").prop("checked", localStorage.getItem("xmpp") === 'true');
+            }
+            if (localStorage.getItem("mail")) {
+                $("#mail").prop("checked", localStorage.getItem("mail") === 'true');
+            }
+            if (localStorage.getItem("broadsoft")) {
+                $("#broadsoft").prop("checked", localStorage.getItem("broadsoft") === 'true');
+            }
+            if (localStorage.getItem("sms")) {
+                $("#sms").prop("checked", localStorage.getItem("sms") === 'true');
+            }
+            if (localStorage.getItem("twitter")) {
+                $("#twitter").prop("checked", localStorage.getItem("twitter") === 'true');
+            }
+            $('#senderId').val(localStorage.getItem("senderId"));
+            $('#subject').val(localStorage.getItem("subject"));
+            if (localStorage.getItem("firstNameHeader")) {
+                $('#firstNameHeader').val(localStorage.getItem("firstNameHeader"));
+            }
+            if (localStorage.getItem("lastNameHeader")) {
+                $('#lastNameHeader').val(localStorage.getItem("lastNameHeader"));
+            }
+            if (localStorage.getItem("xmppHeader")) {
+                $('#xmppHeader').val(localStorage.getItem("xmppHeader"));
+            }
+            if (localStorage.getItem("smsHeader")) {
+                $('#smsHeader').val(localStorage.getItem("smsHeader"));
+            }
+            if (localStorage.getItem("fixedLineHeader")) {
+                $('#fixedLineHeader').val(localStorage.getItem("fixedLineHeader"));
+            }
+            if (localStorage.getItem("emailHeader")) {
+                $('#emailHeader').val(localStorage.getItem("emailHeader"));
+            }
+            if (localStorage.getItem("twitterHeader")) {
+                $('#twitterHeader').val(localStorage.getItem("twitterHeader"));
+            }
         }
     }
 })();

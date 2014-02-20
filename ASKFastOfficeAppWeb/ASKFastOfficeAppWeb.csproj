@@ -74,6 +74,7 @@
     <Content Include="ask-bootstrap\public\src\js\cryptojs.js" />
     <Content Include="ask-bootstrap\public\src\js\libs\bootstrap\bootstrap.min.js" />
     <Content Include="ask-bootstrap\public\src\less\datepicker.less" />
+    <None Include="Properties\PublishProfiles\ASKFast Test Profile.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

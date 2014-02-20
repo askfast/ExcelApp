@@ -5,13 +5,10 @@
   <Version>1.0.0.0</Version>
   <ProviderName>DEAL Services</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="ASKFastOfficeApp" />
-  <Description DefaultValue="ASKFastOfficeApp"/>
+  <DisplayName DefaultValue="ASKFast Excel App" />
+  <Description DefaultValue="ASKFast Excel App for sending and collecting responses."/>
   <Capabilities>
     <Capability Name="Workbook" />
-    <Capability Name="Presentation" />
-    <Capability Name="Project" />
-    <Capability Name="Document" />
   </Capabilities>
   <DefaultSettings>
     <SourceLocation DefaultValue="~remoteAppUrl/App/Home/Home.html" />

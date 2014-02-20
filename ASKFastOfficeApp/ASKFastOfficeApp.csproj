@@ -20,6 +20,7 @@
     <CspkgPartId>{badb5ddb-08da-4fda-8ede-7d8e1a42b741}</CspkgPartId>
     <SqlPackagePartId>{286ba013-d87f-429b-8dbe-a93752e71935}</SqlPackagePartId>
     <ProjectMode>OfficeApp</ProjectMode>
+    <ActivePublishProfile>ASKFast Test Profile</ActivePublishProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
