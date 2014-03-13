@@ -58,7 +58,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App\Handler1.ashx" />
+    <Content Include="ASKFastRequestHandler.ashx" />
     <Content Include="ask-bootstrap\public\docs\css\fonts\entypo-social.eot" />
     <Content Include="ask-bootstrap\public\docs\css\fonts\entypo-social.ttf" />
     <Content Include="ask-bootstrap\public\docs\css\fonts\entypo-social.woff" />
@@ -75,6 +75,9 @@
     <Content Include="ask-bootstrap\public\src\js\libs\bootstrap\bootstrap.min.js" />
     <Content Include="ask-bootstrap\public\src\less\datepicker.less" />
     <None Include="Properties\PublishProfiles\ASKFast Test Profile.pubxml" />
+    <Content Include="Home.html" />
+    <Content Include="Web Deploy Package\ASKFastOfficeAppWeb.zip" />
+    <Content Include="Web Deploy Package\ASKFastOfficeApp.zip" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -83,10 +86,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App\App.css" />
-    <Content Include="App\App.js" />
-    <Content Include="App\Home\Home.css" />
-    <Content Include="App\Home\Home.html" />
+    <Content Include="Content\App.css" />
+    <Content Include="Scripts\App.js" />
+    <Content Include="Content\Home.css" />
     <Content Include="ask-bootstrap\public\docs\base-css\buttons.html" />
     <Content Include="ask-bootstrap\public\docs\base-css\code.html" />
     <Content Include="ask-bootstrap\public\docs\base-css\entypo.html" />
@@ -399,8 +401,8 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App\Handler1.ashx.cs">
-      <DependentUpon>Handler1.ashx</DependentUpon>
+    <Compile Include="ASKFastRequestHandler.ashx.cs">
+      <DependentUpon>ASKFastRequestHandler.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
