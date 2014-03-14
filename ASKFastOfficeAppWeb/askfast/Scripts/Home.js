@@ -79,7 +79,7 @@
                 cache: false,
                 crossDomain: true,
                 contentType: 'application/json; charset=utf-8',
-                url: '/askfast/ASKFastRequestHandler.ashx/login?username=' + $('#username').val() + "&password=" + CryptoJS.MD5($('#password').val()).toString(),
+                url: './ASKFastRequestHandler.ashx/login?username=' + $('#username').val() + "&password=" + CryptoJS.MD5($('#password').val()).toString(),
                 type: 'GET',
                 dataType: 'json'
             }).success(function (response) {
@@ -166,7 +166,7 @@
                 beforeSend: function (request) {
                     request.setRequestHeader("X-SESSION_ID", X_SESSIONID);
                 },
-                url: '/askfast/ASKFastRequestHandler.ashx?' + 'questionType=' + $('#questionType').val() + appendHeaders(),
+                url: './ASKFastRequestHandler.ashx?' + 'questionType=' + $('#questionType').val() + appendHeaders(),
                 type: 'POST',
                 dataType: 'json',
                 jsonpCallback: function (response) {
@@ -315,7 +315,7 @@
                 beforeSend: function (request) {
                     request.setRequestHeader("X-SESSION_ID", X_SESSIONID);
                 },
-                url: '/askfast/ASKFastRequestHandler.ashx/report',
+                url: './ASKFastRequestHandler.ashx/report',
                 type: 'GET',
                 dataType: 'json'
             }).success(function (response) {

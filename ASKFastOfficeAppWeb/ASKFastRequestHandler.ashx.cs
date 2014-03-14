@@ -70,6 +70,7 @@ namespace ASKFastOfficeAppWeb.App
             {
                 context.Response.StatusCode = 500;
                 response = "Error: " + ex.Message;
+                Console.Write(response);
             }
             context.Response.ContentType = "text/plain";
             context.Response.Write(response);

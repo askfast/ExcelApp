@@ -58,7 +58,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="askfast\ASKFastRequestHandler.ashx" />
+    <Content Include="ASKFastRequestHandler.ashx" />
     <Content Include="askfast\ask-bootstrap\public\docs\css\fonts\entypo-social.eot" />
     <Content Include="askfast\ask-bootstrap\public\docs\css\fonts\entypo-social.ttf" />
     <Content Include="askfast\ask-bootstrap\public\docs\css\fonts\entypo-social.woff" />
@@ -401,7 +401,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="askfast\ASKFastRequestHandler.ashx.cs">
+    <Compile Include="ASKFastRequestHandler.ashx.cs">
       <DependentUpon>ASKFastRequestHandler.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
