@@ -11,7 +11,7 @@
     <Capability Name="Workbook" />
   </Capabilities>
   <DefaultSettings>
-    <SourceLocation DefaultValue="http://office.ask-fast.com/askfast/Home.html" />
+    <SourceLocation DefaultValue="~remoteAppUrl/Home.html" />
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
 </OfficeApp>
