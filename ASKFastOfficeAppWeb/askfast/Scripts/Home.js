@@ -18,9 +18,15 @@
 
     $(document).ready(function () {
         preInitialize();
+        doLogin();
         //The initialize function must be run each time a new page is loaded
-        Office.initialize = function (reason) {
-            initializeApp(reason);
+        try {
+            Office.initialize = function (reason) {
+                initializeApp(reason);
+            }
+        }
+        catch (e) {
+            app.showNotification("", "This app is expected to be opened with Excel 365");
         }
     });
 
@@ -76,17 +82,17 @@
     function preInitialize() {
         app.initialize();
         //login if username and password is enabled already
-        if (supports_html5_storage()) {
-            $('#username').val(localStorage.getItem("username"));
-            $('#password').val(localStorage.getItem("password"));
-            if (localStorage.getItem("autoLogon")) {
-                $("#autoLogon").prop("checked", localStorage.getItem("autoLogon") === 'true');
-            }
-            if ($('#username').val() != null && $('#password').val() != null
-                && $('#autoLogon').is(":checked")) {
-                doLogin();
-            }
-        }
+        //if (supports_html5_storage()) {
+        //    $('#username').val(localStorage.getItem("username"));
+        //    $('#password').val(localStorage.getItem("password"));
+        //    if (localStorage.getItem("autoLogon")) {
+        //        $("#autoLogon").prop("checked", localStorage.getItem("autoLogon") === 'true');
+        //    }
+        //    if ($('#username').val() != null && $('#password').val() != null
+        //        && $('#autoLogon').is(":checked")) {
+        //        doLogin();
+        //    }
+        //}
         loadDataFromLocalStorage();
         $('#message').keyup(enableSendButton);
         //disable the extras div
@@ -101,9 +107,9 @@
         //$('#sms').click(toggleAdapterTypes);
         //$('#twitter').click(toggleAdapterTypes);
         $('#matchQuestionCheckBox').click(toggleMatchingQuestionText);
-        $('#login').click(doLogin);
-        $('#username').keyup(enableLoginButton);
-        $('#password').keyup(enableLoginButton);
+        //$('#login').click(doLogin);
+        //$('#username').keyup(enableLoginButton);
+        //$('#password').keyup(enableLoginButton);
         $(".nexttab").click(function () {
             $('a[href="#settingsTab"]').tab('show');
         });
@@ -118,7 +124,7 @@
         });
         //$('#generate').click(genereateReport);
         //$('#send').click(getDataFromSelection);
-        enableLoginButton();
+        //enableLoginButton();
         enableSendButton();
     }
 
@@ -129,35 +135,38 @@
 
     //perform login
     function doLogin() {
-        if ($('#username').val() != null && $('#password').val() != null) {
-            //store the page values in local storage
-            if (supports_html5_storage()) {
-                localStorage.setItem("username", $('#username').val());
-                localStorage.setItem("password", $('#password').val());
-                localStorage.setItem("autoLogon", $('#autoLogon').is(":checked"));
-            }
+        //if ($('#username').val() != null && $('#password').val() != null) {
+        //store the page values in local storage
+        //if (supports_html5_storage()) {
+        //    localStorage.setItem("username", $('#username').val());
+        //    localStorage.setItem("password", $('#password').val());
+        //    localStorage.setItem("autoLogon", $('#autoLogon').is(":checked"));
+        //}
 
-            app.showNotification("Signing in into " + $('#username').val(), "");
-            $.ajax({
-                cache: false,
-                crossDomain: true,
-                contentType: 'application/json; charset=utf-8',
-                url: './ASKFastRequestHandler.ashx/login?username=' + $('#username').val() + "&password=" + CryptoJS.MD5($('#password').val()).toString(),
-                type: 'GET',
-                dataType: 'json'
-            }).success(function (response) {
-                X_SESSIONID = response["X-SESSION_ID"];
-                app.showNotification("Success", "Login successful");
-                console.log("Success", response.statusText);
-                if (lastTabSelected) {
-                    $('a[href="' + lastTabSelected + '"]').tab('show');
-                }
-            }).error(function (response) {
-                app.showNotification("Error", response.responseText);
-                console.log("Error", response.statusText);
-            });
-        }
+        //app.showNotification("Signing in into " + $('#username').val(), "");
+        app.showNotification("Signing in into test@excelapp", "");
+        $.ajax({
+            cache: false,
+            crossDomain: true,
+            contentType: 'application/json; charset=utf-8',
+            url: './ASKFastRequestHandler.ashx/login?username=test@excelapp&password=' + CryptoJS.MD5('test@excelapp').toString(),
+            type: 'GET',
+            dataType: 'json'
+        }).success(function (response) {
+            X_SESSIONID = response["X-SESSION_ID"];
+            //app.showNotification("Success", "Login successful");
+            app.showNotification("", "Welcome to Communicator app");
+            console.log("Success", response.statusText);
+            if (lastTabSelected) {
+                $('a[href="' + lastTabSelected + '"]').tab('show');
+            }
+        }).error(function (response) {
+            app.showNotification("Error", response.responseText);
+            console.log("Error", response.statusText);
+        });
+        //}
     }
+
     //enable extras if text message (apart from twitter) is selected
     //function toggleAdapterTypes() {
     //    if ($('#xmpp').is(":checked") || $('#sms').is(":checked") || $('#mail').is(":checked")) {
@@ -419,8 +428,6 @@
                 dataType: 'json'
             }).success(function (response) {
                 writeReportOnSheet(response);
-                app.showNotification("Success", response.statusText);
-                console.log("Success", response.statusText);
             }).error(function (response) {
                 app.showNotification("Error", response.responseText);
                 console.log("Error", response.statusText);
@@ -487,12 +494,13 @@
                 Office.context.document.setSelectedDataAsync(data, { coercionType: "matrix" },
                     function (asyncResult) {
                         if (asyncResult.status === "failed") {
-                            app.showNotification(asyncResult.error.name, asyncResult.error.message);
+                            //app.showNotification(asyncResult.error.name, asyncResult.error.message);
+                            app.showNotification(asyncResult.error.name, "Please make sure the range is empty where the report is to be generated");
                         }
                     });
             }
             else {
-                app.showNotification("Info", "Reports found but none matching the question: " + $('#message').val());
+                app.showNotification("Info", "No reports found for the question: " + $('#message').val());
             }
         }
         else {
