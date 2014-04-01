@@ -144,11 +144,10 @@
         //}
 
         //app.showNotification("Signing in into " + $('#username').val(), "");
-        app.showNotification("Signing in into test@excelapp", "");
+        app.showNotification("Signing in", "");
         $.ajax({
             cache: false,
-            crossDomain: true,
-            contentType: 'application/json; charset=utf-8',
+            contentType: 'application/json',
             url: './ASKFastRequestHandler.ashx/login?username=test@excelapp&password=' + CryptoJS.MD5('test@excelapp').toString(),
             type: 'GET',
             dataType: 'json'
@@ -156,13 +155,11 @@
             X_SESSIONID = response["X-SESSION_ID"];
             //app.showNotification("Success", "Login successful");
             app.showNotification("", "Welcome to Communicator app");
-            console.log("Success", response.statusText);
             if (lastTabSelected) {
                 $('a[href="' + lastTabSelected + '"]').tab('show');
             }
         }).error(function (response) {
             app.showNotification("Error", response.responseText);
-            console.log("Error", response.statusText);
         });
         //}
     }
@@ -236,8 +233,7 @@
             app.showNotification("Sending your request...", "");
             $.ajax({
                 cache: false,
-                crossDomain: true,
-                contentType: 'application/json; charset=utf-8',
+                contentType: 'application/json',
                 beforeSend: function (request) {
                     request.setRequestHeader("X-SESSION_ID", X_SESSIONID);
                 },
@@ -252,7 +248,6 @@
                 showFailures(response);
             }).error(function (response) {
                 app.showNotification("Error", response.responseText);
-                console.log("Error", response.statusText);
             });
         } else {
             app.showNotification('Error:', result.error.message);
@@ -418,8 +413,7 @@
             app.showNotification("Generating report..", "");
             $.ajax({
                 cache: false,
-                crossDomain: true,
-                contentType: 'application/json; charset=utf-8',
+                contentType: 'application/json',
                 beforeSend: function (request) {
                     request.setRequestHeader("X-SESSION_ID", X_SESSIONID);
                 },
@@ -430,7 +424,6 @@
                 writeReportOnSheet(response);
             }).error(function (response) {
                 app.showNotification("Error", response.responseText);
-                console.log("Error", response.statusText);
             });
         }
         else {
