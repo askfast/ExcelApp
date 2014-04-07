@@ -104,9 +104,6 @@
                 dataType: 'json'
             }).success(function (response) {
                 X_SESSIONID = response["X-SESSION_ID"];
-                if (lastTabSelected) {
-                    $('a[href="' + lastTabSelected + '"]').tab('show');
-                }
                 app.showNotification("Success", "Login successful");
             }).error(function (response) {
                 app.showNotification("Error", response.responseText);
