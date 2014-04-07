@@ -3,14 +3,14 @@
 (function () {
     "use strict";
     //default headers
-    //var smsHeader = "Mobile";
-    //var fixedLineHeader = "Fixed Line";
-    //var firstNameHeader = "First Name";
-    //var lastNameHeader = "Last Name";
+    var smsHeader = "Mobile";
+    var fixedLineHeader = "Fixed Line";
+    var firstNameHeader = "First Name";
+    var lastNameHeader = "Last Name";
     var emailHeader = "Email";
-    //var xmppHeader = "XMPP";
-    //var facebookHeader = "Facebook";
-    //var twitterHeader = "Twitter";
+    var xmppHeader = "XMPP";
+    var facebookHeader = "Facebook";
+    var twitterHeader = "Twitter";
     //header mappings to adapters
     var headerMappings = {};
     var X_SESSIONID = "";
@@ -18,7 +18,6 @@
 
     $(document).ready(function () {
         preInitialize();
-        doLogin();
         //The initialize function must be run each time a new page is loaded
         try {
             Office.initialize = function (reason) {
@@ -30,86 +29,42 @@
         }
     });
 
-    // The initialize function must be run each time a new page is loaded
-    //Office.initialize = function (reason) {
-    //    $(document).ready(function () {
-    //        app.initialize();
-    //        //login if username and password is enabled already
-    //        if (supports_html5_storage()) {
-    //            $('#username').val(localStorage.getItem("username"));
-    //            $('#password').val(localStorage.getItem("password"));
-    //            if ($('#username').val() != null && $('#password').val() != null
-    //                && $('#autoLogon').is(":checked")) {
-    //                doLogin();
-    //            }
-    //        }
-    //        loadDataFromLocalStorage();
-    //        $('#message').keyup(enableSendButton);
-    //        $('#send').click(getDataFromSelection);
-    //        //disable the extras div
-    //        //$('#extrasHeader').hide();
-    //        //$('#extras').hide();
-    //        //event listners for adapters toggle 
-    //        //toggleAdapterTypes();
-    //        toggleMatchingQuestionText();
-    //        //$('#xmpp').click(toggleAdapterTypes);
-    //        $('#mail').click(toggleAdapterTypes);
-    //        //$('#broadsoft').click(toggleAdapterTypes);
-    //        //$('#sms').click(toggleAdapterTypes);
-    //        //$('#twitter').click(toggleAdapterTypes);
-    //        $('#matchQuestionCheckBox').click(toggleMatchingQuestionText);
-    //        $('#login').click(doLogin);
-    //        $('#username').keyup(enableLoginButton);
-    //        $('#password').keyup(enableLoginButton);
-    //        $(".nexttab").click(function () {
-    //            $('a[href="#settingsTab"]').tab('show');
-    //        });
-
-    //        //create toggle effect for tabs
-    //        $('#myTabs a').click(function (e) {
-    //            e.preventDefault();
-    //            $(this).tab('show');
-    //            if ($(e.target).attr('href') != '#loginTab') {
-    //                lastTabSelected = $(e.target).attr('href');
-    //            }
-    //        });
-    //        $('#generate').click(genereateReport);
-    //        enableLoginButton();
-    //        enableSendButton();
-    //    });
-    //};
-
     function preInitialize() {
         app.initialize();
         //login if username and password is enabled already
-        //if (supports_html5_storage()) {
-        //    $('#username').val(localStorage.getItem("username"));
-        //    $('#password').val(localStorage.getItem("password"));
-        //    if (localStorage.getItem("autoLogon")) {
-        //        $("#autoLogon").prop("checked", localStorage.getItem("autoLogon") === 'true');
-        //    }
-        //    if ($('#username').val() != null && $('#password').val() != null
-        //        && $('#autoLogon').is(":checked")) {
-        //        doLogin();
-        //    }
-        //}
+        if (supports_html5_storage()) {
+            $('#username').val(localStorage.getItem("username"));
+            $('#password').val(localStorage.getItem("password"));
+            if (localStorage.getItem("autoLogon")) {
+                $("#autoLogon").prop("checked", localStorage.getItem("autoLogon") === 'true');
+            }
+            if ($('#username').val() != null && $('#password').val() != null
+                && $('#autoLogon').is(":checked")) {
+                doLogin();
+            }
+        }
         loadDataFromLocalStorage();
         $('#message').keyup(enableSendButton);
         //disable the extras div
-        //$('#extrasHeader').hide();
-        //$('#extras').hide();
+        $('#extrasHeader').hide();
+        $('#extras').hide();
         //event listners for adapters toggle 
-        //toggleAdapterTypes();
+        toggleAdapterTypes();
         toggleMatchingQuestionText();
-        //$('#xmpp').click(toggleAdapterTypes);
-        //$('#mail').click(toggleAdapterTypes);
-        //$('#broadsoft').click(toggleAdapterTypes);
-        //$('#sms').click(toggleAdapterTypes);
-        //$('#twitter').click(toggleAdapterTypes);
-        $('#matchQuestionCheckBox').click(toggleMatchingQuestionText);
-        //$('#login').click(doLogin);
-        //$('#username').keyup(enableLoginButton);
-        //$('#password').keyup(enableLoginButton);
+        $('#xmpp').change(toggleAdapterTypes);
+        $('#mail').change(toggleAdapterTypes);
+        $('#broadsoft').change(toggleAdapterTypes);
+        $('#sms').change(toggleAdapterTypes);
+        $('#twitter').change(toggleAdapterTypes);
+        $('#matchQuestionCheckBox').change(toggleMatchingQuestionText);
+        $('#login').click(doLogin);
+        $('#username').keyup(enableLoginButton);
+        $('#password').keyup(enableLoginButton);
+        $('#selectNone').click(selectNone);
+        $('#selectAll').click(selectAll);
+        showQuestionTypeInfo();
+        $('#questionType').change(showQuestionTypeInfo);
+        $('#questionType').click();
         $(".nexttab").click(function () {
             $('a[href="#settingsTab"]').tab('show');
         });
@@ -122,9 +77,7 @@
                 lastTabSelected = $(e.target).attr('href');
             }
         });
-        //$('#generate').click(genereateReport);
-        //$('#send').click(getDataFromSelection);
-        //enableLoginButton();
+        enableLoginButton();
         enableSendButton();
     }
 
@@ -135,56 +88,79 @@
 
     //perform login
     function doLogin() {
-        //if ($('#username').val() != null && $('#password').val() != null) {
-        //store the page values in local storage
-        //if (supports_html5_storage()) {
-        //    localStorage.setItem("username", $('#username').val());
-        //    localStorage.setItem("password", $('#password').val());
-        //    localStorage.setItem("autoLogon", $('#autoLogon').is(":checked"));
-        //}
-
-        //app.showNotification("Signing in into " + $('#username').val(), "");
-        app.showNotification("Signing in", "");
-        $.ajax({
-            cache: false,
-            contentType: 'application/json',
-            url: './ASKFastRequestHandler.ashx/login?username=test@excelapp&password=' + CryptoJS.MD5('test@excelapp').toString(),
-            type: 'GET',
-            dataType: 'json'
-        }).success(function (response) {
-            X_SESSIONID = response["X-SESSION_ID"];
-            //app.showNotification("Success", "Login successful");
-            app.showNotification("", "Welcome to Communicator app");
-            if (lastTabSelected) {
-                $('a[href="' + lastTabSelected + '"]').tab('show');
+        if ($('#username').val() != null && $('#password').val() != null) {
+            //store the page values in local storage
+            if (supports_html5_storage()) {
+                localStorage.setItem("username", $('#username').val());
+                localStorage.setItem("password", $('#password').val());
+                localStorage.setItem("autoLogon", $('#autoLogon').is(":checked"));
             }
-        }).error(function (response) {
-            app.showNotification("Error", response.responseText);
-        });
-        //}
+            app.showNotification("Signing in into " + $('#username').val(), "");
+            $.ajax({
+                cache: false,
+                contentType: 'application/json',
+                url: './ASKFastRequestHandler.ashx/login?username=' + $('#username').val() + "&password=" + CryptoJS.MD5($('#password').val()).toString(),
+                type: 'GET',
+                dataType: 'json'
+            }).success(function (response) {
+                X_SESSIONID = response["X-SESSION_ID"];
+                if (lastTabSelected) {
+                    $('a[href="' + lastTabSelected + '"]').tab('show');
+                }
+                app.showNotification("Success", "Login successful");
+            }).error(function (response) {
+                app.showNotification("Error", response.responseText);
+            });
+        }
     }
 
     //enable extras if text message (apart from twitter) is selected
-    //function toggleAdapterTypes() {
-    //    if ($('#xmpp').is(":checked") || $('#sms').is(":checked") || $('#mail').is(":checked")) {
-    //        $('#extras').show();
-    //        $('#extrasHeader').show();
-    //        $('#broadcastMessage').html('<strong>Step 7: </strong> Send your message.');
-    //        if ($('#xmpp').is(":checked") || $('#sms').is(":checked")) {
-    //            $('#senderIdRow').show();
-    //            $('#subjectRow').hide();
-    //        }
-    //        if ($('#mail').is(":checked")) {
-    //            $('#senderIdRow').show();
-    //            $('#subjectRow').show();
-    //        }
-    //    }
-    //    else {
-    //        $('#broadcastMessage').html('<strong>Step 6: </strong> Broadcast your message.');
-    //        $('#extrasHeader').hide();
-    //        $('#extras').hide();
-    //    }
-    //}
+    function toggleAdapterTypes() {
+        if ($('#broadsoft').is(":checked")) {
+            $('#extrasHeader').html('<strong>Step 6: </strong> Attach your name to your message.');
+            $('#languageDiv').show();
+        }
+        else {
+            $('#languageDiv').hide();
+            $('#extrasHeader').html('<strong>Step 5: </strong> Attach your name to your message.');
+        }
+        if ($('#xmpp').is(":checked") || $('#sms').is(":checked") || $('#mail').is(":checked")) {
+            $('#extras').show();
+            $('#extrasHeader').show();
+            $('#broadcastMessage').html('<strong>Step 7: </strong> Send your message.');
+            if ($('#xmpp').is(":checked") || $('#sms').is(":checked")) {
+                $('#senderIdRow').show();
+                $('#subjectRow').hide();
+            }
+            if ($('#mail').is(":checked")) {
+                $('#senderIdRow').show();
+                $('#subjectRow').show();
+            }
+        }
+        else {
+            $('#broadcastMessage').html('<strong>Step 6: </strong> Send your message.');
+            $('#extrasHeader').hide();
+            $('#extras').hide();
+        }
+    }
+
+    function selectNone() {
+        $('#xmpp').prop("checked", false);
+        $('#mail').prop("checked", false);
+        $('#broadsoft').prop("checked", false);
+        $('#sms').prop("checked", false);
+        $('#twitter').prop("checked", false);
+        toggleAdapterTypes();
+    }
+
+    function selectAll() {
+        $('#xmpp').prop("checked", true);
+        $('#mail').prop("checked", true);
+        $('#broadsoft').prop("checked", true);
+        $('#sms').prop("checked", true);
+        $('#twitter').prop("checked", true);
+        toggleAdapterTypes();
+    }
 
     // Reads data from current document selection and displays a notification
     function getDataFromSelection() {
@@ -255,52 +231,52 @@
     }
 
     //returns a csv format string from the excel range selected
-    //function getCSVFromSelection(result) {
-    //    var resultCSV = '';
-    //    for (var rowCount = 0; rowCount < result.length; rowCount++) {
-    //        for (var columnCount = 0; columnCount < result[rowCount].length; columnCount++) {
-    //            //check if the column is ignored
-    //            if (!shouldColumnBeIgnored(result[0][columnCount])) {
-    //                if (columnCount != 0) {
-    //                    resultCSV += ",";
-    //                }
-    //                resultCSV += result[rowCount][columnCount];
-    //            }
-    //        }
-    //        if (rowCount != result.length - 1) {
-    //            resultCSV += "\n";
-    //        }
-    //    }
-    //    return resultCSV;
-    //}
-
     function getCSVFromSelection(result) {
-        var csvHeader = emailHeader + "\n";
         var resultCSV = '';
         for (var rowCount = 0; rowCount < result.length; rowCount++) {
-            var rowData = '';
             for (var columnCount = 0; columnCount < result[rowCount].length; columnCount++) {
-                if (result[rowCount][columnCount] != '') {
-                    //check if the column is ignored
-                    if (columnCount != 0 && rowData != '') {
-                        rowData += "\n";
+                //check if the column is ignored
+                if (!shouldColumnBeIgnored(result[0][columnCount])) {
+                    if (columnCount != 0) {
+                        resultCSV += ",";
                     }
-                    rowData += result[rowCount][columnCount];
+                    resultCSV += result[rowCount][columnCount];
                 }
             }
-            if (rowData != '') {
-                resultCSV += rowData;
-                if (rowCount != result.length - 1) {
-                    resultCSV += "\n";
-                }
+            if (rowCount != result.length - 1) {
+                resultCSV += "\n";
             }
         }
-        if (resultCSV === '') {
-            app.showNotification("Error", "Please select the excel range with valid addresses");
-            return '';
-        }
-        return csvHeader + resultCSV;
+        return resultCSV;
     }
+
+    //function getCSVFromSelection(result) {
+    //    var csvHeader = emailHeader + "\n";
+    //    var resultCSV = '';
+    //    for (var rowCount = 0; rowCount < result.length; rowCount++) {
+    //        var rowData = '';
+    //        for (var columnCount = 0; columnCount < result[rowCount].length; columnCount++) {
+    //            if (result[rowCount][columnCount] != '') {
+    //                //check if the column is ignored
+    //                if (columnCount != 0 && rowData != '') {
+    //                    rowData += "\n";
+    //                }
+    //                rowData += result[rowCount][columnCount];
+    //            }
+    //        }
+    //        if (rowData != '') {
+    //            resultCSV += rowData;
+    //            if (rowCount != result.length - 1) {
+    //                resultCSV += "\n";
+    //            }
+    //        }
+    //    }
+    //    if (resultCSV === '') {
+    //        app.showNotification("Error", "Please select the excel range with valid addresses");
+    //        return '';
+    //    }
+    //    return csvHeader + resultCSV;
+    //}
 
     function enableSendButton(result) {
         if ($('#message').val() != "") {
@@ -367,21 +343,21 @@
     //update the default columnHeaders if changes in settings tab
     function updateHeaders() {
         //update the headers
-        //smsHeader = $('#smsHeader').val() != smsHeader ? $('#smsHeader').val() : smsHeader;
-        //fixedLineHeader = $('#fixedLineHeader').val() != fixedLineHeader ? $('#fixedLineHeader').val() : fixedLineHeader;
-        //firstNameHeader = $('#firstNameHeader').val() != firstNameHeader ? $('#firstNameHeader').val() : firstNameHeader;
-        //lastNameHeader = $('#lastNameHeader').val() != lastNameHeader ? $('#lastNameHeader').val() : lastNameHeader;
-        //emailHeader = $('#emailHeader').val() != emailHeader ? $('#emailHeader').val() : emailHeader;
-        //xmppHeader = $('#xmppHeader').val() != xmppHeader ? $('#xmppHeader').val() : xmppHeader;
-        //twitterHeader = $('#twitterHeader').val() != twitterHeader ? $('#twitterHeader').val() : twitterHeader;
+        smsHeader = $('#smsHeader').val() != smsHeader ? $('#smsHeader').val() : smsHeader;
+        fixedLineHeader = $('#fixedLineHeader').val() != fixedLineHeader ? $('#fixedLineHeader').val() : fixedLineHeader;
+        firstNameHeader = $('#firstNameHeader').val() != firstNameHeader ? $('#firstNameHeader').val() : firstNameHeader;
+        lastNameHeader = $('#lastNameHeader').val() != lastNameHeader ? $('#lastNameHeader').val() : lastNameHeader;
+        emailHeader = $('#emailHeader').val() != emailHeader ? $('#emailHeader').val() : emailHeader;
+        xmppHeader = $('#xmppHeader').val() != xmppHeader ? $('#xmppHeader').val() : xmppHeader;
+        twitterHeader = $('#twitterHeader').val() != twitterHeader ? $('#twitterHeader').val() : twitterHeader;
         //update the headerMappings
-        //headerMappings["firstName"] = firstNameHeader;
-        //headerMappings["lastName"] = lastNameHeader;
-        //headerMappings["broadsoft"] = fixedLineHeader;
-        //headerMappings["sms"] = smsHeader;
-        //headerMappings["xmpp"] = xmppHeader;
+        headerMappings["firstName"] = firstNameHeader;
+        headerMappings["lastName"] = lastNameHeader;
+        headerMappings["broadsoft"] = fixedLineHeader;
+        headerMappings["sms"] = smsHeader;
+        headerMappings["xmpp"] = xmppHeader;
         headerMappings["mail"] = emailHeader;
-        //headerMappings["twitter"] = twitterHeader;
+        headerMappings["twitter"] = twitterHeader;
     }
 
     //returns true or false based on the mediums selected in the checkbox: adapterTypes
@@ -397,14 +373,13 @@
 
     //returns a string value of all the header query parameters added
     function appendHeaders() {
-        return "&emailHeader=" + encodeURIComponent(emailHeader);
-        //"&firstName=" + encodeURIComponent(firstNameHeader) +
-        //  "&lastName=" + encodeURIComponent(lastNameHeader) +
-        // "&smsHeader=" + (($('#sms').is(":checked")) ? encodeURIComponent(smsHeader) : "") +
-        // "&callHeader=" + (($('#broadsoft').is(":checked")) ? encodeURIComponent(fixedLineHeader) : "") +
-        //"&emailHeader=" + (($('#mail').is(":checked")) ? encodeURIComponent(emailHeader) : "");
-        //  "&xmppHeader=" + (($('#xmpp').is(":checked")) ? encodeURIComponent(xmppHeader) : "") +
-        //  "&twitterHeader=" + (($('#twitter').is(":checked")) ? encodeURIComponent(twitterHeader) : "");
+        return "&firstName=" + encodeURIComponent(firstNameHeader) +
+          "&lastName=" + encodeURIComponent(lastNameHeader) +
+         "&smsHeader=" + (($('#sms').is(":checked")) ? encodeURIComponent(smsHeader) : "") +
+         "&callHeader=" + (($('#broadsoft').is(":checked")) ? encodeURIComponent(fixedLineHeader) : "") +
+        "&emailHeader=" + (($('#mail').is(":checked")) ? encodeURIComponent(emailHeader) : "");
+        "&xmppHeader=" + (($('#xmpp').is(":checked")) ? encodeURIComponent(xmppHeader) : "") +
+        "&twitterHeader=" + (($('#twitter').is(":checked")) ? encodeURIComponent(twitterHeader) : "");
     }
 
     //generates the report on the excel sheet for the reponse to the questions seen
@@ -422,6 +397,7 @@
                 dataType: 'json'
             }).success(function (response) {
                 writeReportOnSheet(response);
+                app.showNotification("Success", "Reports generated successfully!");
             }).error(function (response) {
                 app.showNotification("Error", response.responseText);
             });
@@ -488,7 +464,8 @@
                     function (asyncResult) {
                         if (asyncResult.status === "failed") {
                             //app.showNotification(asyncResult.error.name, asyncResult.error.message);
-                            app.showNotification(asyncResult.error.name, "Please make sure the range is empty where the report is to be generated");
+                            app.showNotification(asyncResult.error.name, "Please make sure you select one cell and "
+                                 + "the range is empty where the report is to be generated");
                         }
                     });
             }
@@ -529,21 +506,21 @@
         if (supports_html5_storage()) {
             localStorage.setItem("message", $('#message').val());
             localStorage.setItem("questionType", $('#questionType').val());
-            //localStorage.setItem("language", $('#language').val());
-            //localStorage.setItem("xmpp", $('#xmpp').is(":checked"));
+            localStorage.setItem("language", $('#language').val());
+            localStorage.setItem("xmpp", $('#xmpp').is(":checked"));
             localStorage.setItem("mail", $('#mail').is(":checked"));
-            //localStorage.setItem("broadsoft", $('#broadsoft').is(":checked"));
-            //localStorage.setItem("sms", $('#sms').is(":checked"));
-            //localStorage.setItem("twitter", $('#twitter').is(":checked"));
+            localStorage.setItem("broadsoft", $('#broadsoft').is(":checked"));
+            localStorage.setItem("sms", $('#sms').is(":checked"));
+            localStorage.setItem("twitter", $('#twitter').is(":checked"));
             localStorage.setItem("senderId", $('#senderId').val());
             localStorage.setItem("subject", $('#subject').val());
-            //localStorage.setItem("firstNameHeader", $('#firstNameHeader').val());
-            //localStorage.setItem("lastNameHeader", $('#lastNameHeader').val());
-            //localStorage.setItem("xmppHeader", $('#xmppHeader').val());
-            //localStorage.setItem("smsHeader", $('#smsHeader').val());
-            //localStorage.setItem("fixedLineHeader", $('#fixedLineHeader').val());
+            localStorage.setItem("firstNameHeader", $('#firstNameHeader').val());
+            localStorage.setItem("lastNameHeader", $('#lastNameHeader').val());
+            localStorage.setItem("xmppHeader", $('#xmppHeader').val());
+            localStorage.setItem("smsHeader", $('#smsHeader').val());
+            localStorage.setItem("fixedLineHeader", $('#fixedLineHeader').val());
             localStorage.setItem("emailHeader", $('#emailHeader').val());
-            //localStorage.setItem("twitterHeader", $('#twitterHeader').val());
+            localStorage.setItem("twitterHeader", $('#twitterHeader').val());
         }
     }
 
@@ -551,23 +528,25 @@
     function loadDataFromLocalStorage() {
         if (supports_html5_storage()) {
             $('#message').val(localStorage.getItem("message"));
-            $('#questionType').val(localStorage.getItem("questionType"));
-            //$('#language').val(localStorage.getItem("language"));
-            //if (localStorage.getItem("xmpp")) {
-            //    $("#xmpp").prop("checked", localStorage.getItem("xmpp") === 'true');
-            //}
-            //if (localStorage.getItem("mail")) {
-            //    $("#mail").prop("checked", localStorage.getItem("mail") === 'true');
-            //}
-            //if (localStorage.getItem("broadsoft")) {
-            //    $("#broadsoft").prop("checked", localStorage.getItem("broadsoft") === 'true');
-            //}
-            //if (localStorage.getItem("sms")) {
-            //    $("#sms").prop("checked", localStorage.getItem("sms") === 'true');
-            //}
-            //if (localStorage.getItem("twitter")) {
-            //    $("#twitter").prop("checked", localStorage.getItem("twitter") === 'true');
-            //}
+            if (localStorage.getItem("questionType")) {
+                $('#questionType').val(localStorage.getItem("questionType"));
+            }
+            $('#language').val(localStorage.getItem("language"));
+            if (localStorage.getItem("xmpp")) {
+                $("#xmpp").prop("checked", localStorage.getItem("xmpp") === 'true');
+            }
+            if (localStorage.getItem("mail")) {
+                $("#mail").prop("checked", localStorage.getItem("mail") === 'true');
+            }
+            if (localStorage.getItem("broadsoft")) {
+                $("#broadsoft").prop("checked", localStorage.getItem("broadsoft") === 'true');
+            }
+            if (localStorage.getItem("sms")) {
+                $("#sms").prop("checked", localStorage.getItem("sms") === 'true');
+            }
+            if (localStorage.getItem("twitter")) {
+                $("#twitter").prop("checked", localStorage.getItem("twitter") === 'true');
+            }
             $('#senderId').val(localStorage.getItem("senderId"));
             $('#subject').val(localStorage.getItem("subject"));
             if (localStorage.getItem("firstNameHeader")) {
@@ -591,6 +570,18 @@
             if (localStorage.getItem("twitterHeader")) {
                 $('#twitterHeader').val(localStorage.getItem("twitterHeader"));
             }
+        }
+    }
+
+    function showQuestionTypeInfo() {
+        if ($('#questionType').val() == 'comment') {
+            $('#questionTypeInfo').html('<strong>Broadcast: </strong> One-way outbound communication. <br />');
+        }
+        else if ($('#questionType').val() == 'open') {
+            $('#questionTypeInfo').html('<strong>Open Question: </strong> Two-way communication to accept open feedback/response. <br />');
+        }
+        else if ($('#questionType').val() == 'closed') {
+            $('#questionTypeInfo').html('<strong>Yes/No Question: </strong> Two-way communication to accept either a Yes or a No as feedback/response.');
         }
     }
 })();
