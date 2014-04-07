@@ -74,10 +74,12 @@
     <Content Include="askfast\ask-bootstrap\public\src\js\cryptojs.js" />
     <Content Include="askfast\ask-bootstrap\public\src\js\libs\bootstrap\bootstrap.min.js" />
     <Content Include="askfast\ask-bootstrap\public\src\less\datepicker.less" />
+    <Content Include="askfast\Images\officejs_error.jpg" />
+    <Content Include="docs\PrivacyStatementASKFast.pdf" />
+    <Content Include="docs\ExcelAppSupportDoc.pdf" />
     <None Include="Properties\PublishProfiles\ASKFast Test Profile.pubxml" />
+    <Content Include="docs\IconURLError.jpg" />
     <Content Include="Home.html" />
-    <Content Include="Web Deploy Package\ASKFastOfficeAppWeb.zip" />
-    <Content Include="Web Deploy Package\ASKFastOfficeApp.zip" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -197,8 +199,6 @@
     <Content Include="askfast\ask-bootstrap\public\src\js\libs\bootstrap\bootstrap.js" />
     <Content Include="askfast\ask-bootstrap\public\src\js\libs\chosen\chosen.js" />
     <Content Include="askfast\ask-bootstrap\public\src\js\libs\chosen\chosen.min.js" />
-    <Content Include="askfast\ask-bootstrap\public\src\js\libs\jquery\jquery-1.8.2.min.js" />
-    <Content Include="askfast\ask-bootstrap\public\src\js\libs\jquery\jquery.js" />
     <Content Include="askfast\ask-bootstrap\public\src\js\libs\tablesorter\tablesorter.js" />
     <Content Include="askfast\ask-bootstrap\public\src\js\libs\tablesorter\tablesorter.min.js" />
     <Content Include="askfast\ask-bootstrap\public\src\js\libs\tablesorter\tablesorter.pager.js" />
@@ -211,12 +211,12 @@
     <Content Include="askfast\Content\Office.css" />
     <Content Include="askfast\Images\Close.png" />
     <Content Include="askfast\Images\logo.png" />
+    <Content Include="askfast\Images\favicon.png" />
     <Content Include="packages.config" />
     <None Include="askfast\ask-bootstrap\public\src\js\libs\jquery\jquery-1.9.1.intellisense.js" />
     <Content Include="askfast\Scripts\Home.js" />
     <Content Include="askfast\ask-bootstrap\public\src\js\libs\jquery\jquery-1.9.1.js" />
     <Content Include="askfast\ask-bootstrap\public\src\js\libs\jquery\jquery-1.9.1.min.js" />
-    <Content Include="askfast\Scripts\jquery-1.9.1.min.map" />
     <None Include="askfast\Scripts\_references.js" />
     <None Include="askfast\Scripts\Office\1.0\outlook-15.debug-vsdoc.js" />
     <None Include="askfast\Scripts\Office\1.0\office-vsdoc.js" />

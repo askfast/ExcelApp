@@ -10,10 +10,9 @@
     <script src="./askfast/ask-bootstrap/public/src/js/cryptojs.js" type="text/javascript"></script>
 
     <link href="./askfast/Content/Office.css" rel="stylesheet" type="text/css" />
-    <!--<script src="https://appsforoffice.microsoft.com/lib/1.0/hosted/office.js" type="text/javascript"></script>-->
-    <!-- To enable offline debugging using a local reference to Office.js, use:                        -->
+    <script src="https://appsforoffice.microsoft.com/lib/1.0/hosted/office.js" type="text/javascript"></script>
     <script src="./askfast/Scripts/Office/MicrosoftAjax.js" type="text/javascript"></script>
-    <script src="./askfast/Scripts/Office/1.0/office.js" type="text/javascript"></script>
+    <!--<script src="./askfast/Scripts/Office/1.0/office.js" type="text/javascript"></script>-->
 
     <link href="./askfast/Content/App.css" rel="stylesheet" type="text/css" />
     <script src="./askfast/Scripts/App.js" type="text/javascript"></script>
@@ -34,18 +33,30 @@
     <ul class="nav nav-tabs" id="myTabs">
         <li class="active"><a href="#homeTab">Home</a></li>
         <li><a href="#reportTab">Reports</a></li>
-        <li><a href="#settingsTab">Settings</a></li>
-        <li><a href="#loginTab">Login</a></li>
+        <!--<li><a href="#settingsTab">Settings</a></li>-->
+        <!--<li><a href="#loginTab">Login</a></li>-->
     </ul>
     <div id='content' class="tab-content">
         <div class="tab-pane active" id="homeTab">
             <p>
-                <strong>Step 1*: </strong> Select a column having addresses along with headers. <br />
-                Customize your headers by going to the <a class="nexttab" href="#">Settings</a> tab
+                <strong>Step 1: </strong> Select an excel range containing valid e-mail addresses. <br />
+                <!--Customize your headers by going to the <a class="nexttab" href="#">Settings</a> tab-->
             </p>
-            <p><strong>Step 2: </strong> Enter a message to be sent.</p>
-            <textarea rows="3" cols="200" id="message" placeholder="Your message.." style="min-width:275px"></textarea>
-            <table border="0">
+            <strong>Step 2: </strong> Choose your message type:
+            <select id="questionType" style="width: 150px" class="text_box">
+                <option value="comment">Broadcast</option>
+                <option value="open">Open Question</option>
+                <option value="closed">Yes/No Question</option>
+            </select>
+            <p style="padding-left: 10px">
+                <strong>Broadcast: </strong> One-way outbound communication. <br />
+                <strong>Open Question: </strong> Two-way communication to accept open feedback/response. <br />
+                <strong>Yes/No Question: </strong> Two-way communication to accept either a Yes or a No as feedback/response.
+            </p>
+
+            <p><strong>Step 3: </strong> Enter a message to be sent.</p>
+            <textarea rows="5" cols="200" id="message" placeholder="Your message.." style="min-width:275px"></textarea>
+            <!--<table border="0">
                 <tr>
                     <td><p><strong>Step 3: </strong> Language: </p> </td>
                     <td>
@@ -91,8 +102,8 @@
                         </select>
                     </td>
                 </tr>
-            </table>
-            <p><strong>Step 5: </strong> Please uncheck if you want to ignore any address columns.</p>
+            </table>-->
+            <!--<p><strong>Step 5: </strong> Please uncheck if you want to ignore any address columns.</p>
             <input name="adapterTypes" id="xmpp" type="checkbox" value="xmpp" checked />XMPP
             <input name="adapterTypes" id="mail" type="checkbox" value="mail" checked />E-Mail
             <input name="adapterTypes" id="broadsoft" type="checkbox" value="broadsoft" checked />Call
@@ -100,9 +111,9 @@
             <input name="adapterTypes" id="twitter" type="checkbox" value="twitter" checked />Twitter
             <br />
             <a href="javascript:selectNone()" style="text-align: end">Select None</a>
-            <a href="javascript:selectAll()">Select All</a>
+            <a href="javascript:selectAll()">Select All</a>-->
             <br />
-            <p id="extrasHeader"><strong>Step 6: </strong> Attach your name to your message.</p>
+            <p id="extrasHeader"><strong>Step 4: </strong> Attach your name to your message.</p>
             <table id="extras" border="0">
                 <tr id="senderIdRow">
                     <td>Sender Name: </td>
@@ -113,20 +124,23 @@
                     <td><input type="text" id="subject" placeholder="Add a subject to your email.." style="min-width:200px"></td>
                 </tr>
             </table>
-            <p id="broadcastMessage"><strong>Step 6: </strong> Send your message.</p>
+            <p id="broadcastMessage"><strong>Step 5: </strong> Send your message.</p>
             <button type="button" id="send" disabled>Send!</button>
             <hr />
             <p>Check out our developer friendly APIs and other products at:</p>
-            <a href="www.ask-fast.com">www.ask-fast.com</a>
+            <a target="_blank" href="http://www.ask-fast.com">www.ask-fast.com</a>
+            <p>Access the <a target="_blank" href="https://ask-fast.com/askfast/docs/ExcelAppSupportDoc.pdf">support url</a>, to check out scenarios where this app would be handy.</p>
         </div>
         <div class="tab-pane" id="reportTab">
-            <p><strong>Step 1:</strong> Select a cell where the report has to start. Make sure </p>
-            <p style="min-width:80px"><strong>Step 2: </strong> Report Details: <br>
-            <input id="matchQuestionCheckBox" type="checkbox" checked /><label id="matchingQuestionText" for="matchQuestionCheckBox"></label></p>
+            <p><strong>Step 1:</strong> Select a cell where the report has to start.</p>
+            <p style="min-width:80px">
+                <strong>Step 2: </strong> Report Details: <br>
+                <input id="matchQuestionCheckBox" type="checkbox" checked /><label id="matchingQuestionText" for="matchQuestionCheckBox"></label>
+            </p>
             <p><strong>Step 3: </strong> Generate report.</p>
             <button type="button" id="generate">Generate!</button>
         </div>
-        <div class="tab-pane" id="settingsTab">
+        <!--<div class="tab-pane" id="settingsTab">
             <p> We parse the columns based on the following headers.</p>
             <table id="columnHeaders" border="0">
                 <tr>
@@ -158,13 +172,13 @@
                     <td><input type="text" id="twitterHeader" placeholder="Default: Twitter" style="min-width:150px" value="Twitter"></td>
                 </tr>
             </table>
-        </div>
-        <div class="tab-pane" id="loginTab">
+        </div>-->
+        <!--<div class="tab-pane" id="loginTab">
             <form>
                 <table border="0">
                     <tr>
                         <td><strong>Username: </strong></td>
-                        <td><input type="text" id="username" placeholder="Enter your username" style="min-width:150px" value="apptestoneline"></td>
+                        <td><input type="text" id="username" placeholder="Enter your username" style="min-width:150px"></td>
                     </tr>
                     <tr>
                         <td><strong>Password: </strong></td>
@@ -172,16 +186,16 @@
                     </tr>
                     <tr>
                         <td style="min-width:80px">
-                            <input id="autoLogon" value="autologon" type="checkbox" checked />Auto login
+                            <input id="autoLogon" type="checkbox"/>Auto login
                         </td>
                     </tr>
                 </table>
                 <br />
                 <button type="submit" id="login" disabled>Login</button>
             </form>
-        </div>
+        </div>-->
     </div>
-    <script>
+    <!--<script>
         function selectNone() {
             $('#xmpp').prop("checked", false);
             $('#mail').prop("checked", false);
@@ -197,6 +211,6 @@
             $('#sms').prop("checked", true);
             $('#twitter').prop("checked", true);
         }
-    </script>
+    </script>-->
 </body>
 </html>
