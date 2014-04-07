@@ -234,18 +234,26 @@
     function getCSVFromSelection(result) {
         var resultCSV = '';
         for (var rowCount = 0; rowCount < result.length; rowCount++) {
+            var rowData = '';
             for (var columnCount = 0; columnCount < result[rowCount].length; columnCount++) {
                 //check if the column is ignored
                 if (!shouldColumnBeIgnored(result[0][columnCount])) {
                     if (columnCount != 0) {
-                        resultCSV += ",";
+                        rowData += ",";
                     }
-                    resultCSV += result[rowCount][columnCount];
+                    rowData += result[rowCount][columnCount];
                 }
             }
-            if (rowCount != result.length - 1) {
-                resultCSV += "\n";
+            if (rowData != '') {
+                resultCSV += rowData;
+                if (rowCount != result.length - 1) {
+                    resultCSV += "\n";
+                }
             }
+        }
+        if (resultCSV === '') {
+            app.showNotification("Error", "Please select the excel range with valid addresses");
+            return '';
         }
         return resultCSV;
     }

@@ -72,7 +72,7 @@ namespace ASKFastOfficeAppWeb.App
                 response = "Error: " + ex.Message;
                 Console.Write(response);
             }
-            context.Response.ContentType = "text/plain";
+            context.Response.ContentType = "application/json";
             context.Response.Write(response);
         }
 
@@ -80,7 +80,7 @@ namespace ASKFastOfficeAppWeb.App
         {
             get
             {
-                return false;
+                return true;
             }
         }
     }

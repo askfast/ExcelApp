@@ -48,15 +48,11 @@
                 <option value="open">Open Question</option>
                 <option value="closed">Yes/No Question</option>
             </select>
-            <p id="questionTypeInfo" style="padding-left: 10px">
-                <!--<strong>Broadcast: </strong> One-way outbound communication. <br />
-                <strong>Open Question: </strong> Two-way communication to accept open feedback/response. <br />
-                <strong>Yes/No Question: </strong> Two-way communication to accept either a Yes or a No as feedback/response.-->
-            </p>
+            <p id="questionTypeInfo" style="padding-left: 10px"></p>
 
             <p><strong>Step 3: </strong> Enter a message to be sent.</p>
             <textarea rows="5" cols="200" id="message" placeholder="Your message.." style="min-width:275px"></textarea>
-            
+
             <p><strong>Step 4: </strong> Please uncheck if you want to ignore any address columns.</p>
             <input name="adapterTypes" id="xmpp" type="checkbox" value="xmpp" checked />XMPP
             <input name="adapterTypes" id="mail" type="checkbox" value="mail" checked />E-Mail
