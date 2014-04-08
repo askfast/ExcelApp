@@ -33,87 +33,70 @@
     <ul class="nav nav-tabs" id="myTabs">
         <li class="active"><a href="#homeTab">Home</a></li>
         <li><a href="#reportTab">Reports</a></li>
-        <!--<li><a href="#settingsTab">Settings</a></li>-->
-        <!--<li><a href="#loginTab">Login</a></li>-->
+        <li><a href="#settingsTab">Settings</a></li>
+        <li><a href="#loginTab">Login</a></li>
     </ul>
     <div id='content' class="tab-content">
         <div class="tab-pane active" id="homeTab">
             <p>
-                <strong>Step 1: </strong> Select an excel range containing valid e-mail addresses. <br />
-                <!--Customize your headers by going to the <a class="nexttab" href="#">Settings</a> tab-->
+                <strong>Step 1: </strong> Select an excel range containing valid addresses. <br />
+                Customize your headers by going to the <a class="nexttab" href="#">Settings</a> tab
             </p>
             <strong>Step 2: </strong> Choose your message type:
-            <select id="questionType" style="width: 150px" class="text_box">
-                <option value="comment">Broadcast</option>
+            <select id="questionType" style="width: 150px">
+                <option value="comment" selected="selected">Broadcast</option>
                 <option value="open">Open Question</option>
                 <option value="closed">Yes/No Question</option>
             </select>
-            <p style="padding-left: 10px">
-                <strong>Broadcast: </strong> One-way outbound communication. <br />
-                <strong>Open Question: </strong> Two-way communication to accept open feedback/response. <br />
-                <strong>Yes/No Question: </strong> Two-way communication to accept either a Yes or a No as feedback/response.
-            </p>
+            <p id="questionTypeInfo" style="padding-left: 10px"></p>
 
             <p><strong>Step 3: </strong> Enter a message to be sent.</p>
             <textarea rows="5" cols="200" id="message" placeholder="Your message.." style="min-width:275px"></textarea>
-            <!--<table border="0">
-                <tr>
-                    <td><p><strong>Step 3: </strong> Language: </p> </td>
-                    <td>
-                        <select id="language" style="width: 100px" class="text_box">
-                            <option value="nl-nl">Dutch</option>
-                            <option value="ca-es">Catalan</option>
-                            <option value="zh-cn">Chinese (China)</option>
-                            <option value="zh-hk">Chinese (Hong Kong)</option>
-                            <option value="zh-tw">Chinese (Taiwan)</option>
-                            <option value="da-dk">Danish</option>
-                            <option value="nl-nl">Dutch</option>
-                            <option value="en-au">English (Australia)</option>
-                            <option value="en-ca">English (Canada)</option>
-                            <option value="en-gb">English (Great Britain)</option>
-                            <option value="en-in">English (India)</option>
-                            <option value="en-us">English (United States)</option>
-                            <option value="fi-fi">Finnish</option>
-                            <option value="fr-ca">French (Canada)</option>
-                            <option value="fr-fr">French (France)</option>
-                            <option value="de-de">German</option>
-                            <option value="it-it">Italian</option>
-                            <option value="ja-jp">Japanese</option>
-                            <option value="ko-kr">Korean</option>
-                            <option value="nb-no">Norwegian</option>
-                            <option value="pl-pl">Polish</option>
-                            <option value="pt-br">Portuguese (Brazil)</option>
-                            <option value="pt-pt">Portuguese (Portugal)</option>
-                            <option value="ru-ru">Russian</option>
-                            <option value="es-mx">Spanish (Mexico)</option>
-                            <option value="es-es">Spanish (Spain)</option>
-                            <option value="sv-se">Swedish (Sweden)</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr></tr>
-                <tr>
-                    <td><p><strong>Step 4: </strong> Message type: </p> </td>
-                    <td>
-                        <select id="questionType" style="width: 100px" class="text_box">
-                            <option value="comment">Broadcast</option>
-                            <option value="open">Open</option>
-                            <option value="closed">Yes/No</option>
-                        </select>
-                    </td>
-                </tr>
-            </table>-->
-            <!--<p><strong>Step 5: </strong> Please uncheck if you want to ignore any address columns.</p>
+
+            <p><strong>Step 4: </strong> Please uncheck if you want to ignore any address columns.</p>
             <input name="adapterTypes" id="xmpp" type="checkbox" value="xmpp" checked />XMPP
             <input name="adapterTypes" id="mail" type="checkbox" value="mail" checked />E-Mail
             <input name="adapterTypes" id="broadsoft" type="checkbox" value="broadsoft" checked />Call
             <input name="adapterTypes" id="sms" type="checkbox" value="sms" checked />SMS
             <input name="adapterTypes" id="twitter" type="checkbox" value="twitter" checked />Twitter
             <br />
-            <a href="javascript:selectNone()" style="text-align: end">Select None</a>
-            <a href="javascript:selectAll()">Select All</a>-->
+            <a href="#" id="selectNone" style="text-align: end">Select None</a>
+            <a href="#" id="selectAll">Select All</a>
             <br />
-            <p id="extrasHeader"><strong>Step 4: </strong> Attach your name to your message.</p>
+
+            <div id="languageDiv">
+                <p><strong>Step 5: </strong> Language for TTS: </p>
+                <select id="language" style="width: 100px">
+                    <option value="ca-es">Catalan</option>
+                    <option value="zh-cn">Chinese (China)</option>
+                    <option value="zh-hk">Chinese (Hong Kong)</option>
+                    <option value="zh-tw">Chinese (Taiwan)</option>
+                    <option value="da-dk">Danish</option>
+                    <option value="nl-nl" selected="selected">Dutch</option>
+                    <option value="en-au">English (Australia)</option>
+                    <option value="en-ca">English (Canada)</option>
+                    <option value="en-gb">English (Great Britain)</option>
+                    <option value="en-in">English (India)</option>
+                    <option value="en-us">English (United States)</option>
+                    <option value="fi-fi">Finnish</option>
+                    <option value="fr-ca">French (Canada)</option>
+                    <option value="fr-fr">French (France)</option>
+                    <option value="de-de">German</option>
+                    <option value="it-it">Italian</option>
+                    <option value="ja-jp">Japanese</option>
+                    <option value="ko-kr">Korean</option>
+                    <option value="nb-no">Norwegian</option>
+                    <option value="pl-pl">Polish</option>
+                    <option value="pt-br">Portuguese (Brazil)</option>
+                    <option value="pt-pt">Portuguese (Portugal)</option>
+                    <option value="ru-ru">Russian</option>
+                    <option value="es-mx">Spanish (Mexico)</option>
+                    <option value="es-es">Spanish (Spain)</option>
+                    <option value="sv-se">Swedish (Sweden)</option>
+                </select>
+            </div>
+
+            <p id="extrasHeader"><strong>Step 5: </strong> Attach your name to your message.</p>
             <table id="extras" border="0">
                 <tr id="senderIdRow">
                     <td>Sender Name: </td>
@@ -124,13 +107,17 @@
                     <td><input type="text" id="subject" placeholder="Add a subject to your email.." style="min-width:200px"></td>
                 </tr>
             </table>
-            <p id="broadcastMessage"><strong>Step 5: </strong> Send your message.</p>
+
+            <p id="broadcastMessage"><strong>Step 6: </strong> Send your message.</p>
             <button type="button" id="send" disabled>Send!</button>
             <hr />
-            <p>Check out our developer friendly APIs and other products at:</p>
-            <a target="_blank" href="http://www.ask-fast.com">www.ask-fast.com</a>
+            <p>
+                Check out our developer friendly APIs and other products at:
+                <a target="_blank" href="http://www.ask-fast.com">www.ask-fast.com</a>
+            </p>
             <p>Access the <a target="_blank" href="https://ask-fast.com/askfast/docs/ExcelAppSupportDoc.pdf">support url</a>, to check out scenarios where this app would be handy.</p>
         </div>
+
         <div class="tab-pane" id="reportTab">
             <p><strong>Step 1:</strong> Select a cell where the report has to start.</p>
             <p style="min-width:80px">
@@ -140,7 +127,7 @@
             <p><strong>Step 3: </strong> Generate report.</p>
             <button type="button" id="generate">Generate!</button>
         </div>
-        <!--<div class="tab-pane" id="settingsTab">
+        <div class="tab-pane" id="settingsTab">
             <p> We parse the columns based on the following headers.</p>
             <table id="columnHeaders" border="0">
                 <tr>
@@ -172,8 +159,8 @@
                     <td><input type="text" id="twitterHeader" placeholder="Default: Twitter" style="min-width:150px" value="Twitter"></td>
                 </tr>
             </table>
-        </div>-->
-        <!--<div class="tab-pane" id="loginTab">
+        </div>
+        <div class="tab-pane" id="loginTab">
             <form>
                 <table border="0">
                     <tr>
@@ -186,31 +173,14 @@
                     </tr>
                     <tr>
                         <td style="min-width:80px">
-                            <input id="autoLogon" type="checkbox"/>Auto login
+                            <input id="autoLogon" type="checkbox" />Auto login
                         </td>
                     </tr>
                 </table>
                 <br />
-                <button type="submit" id="login" disabled>Login</button>
+                <button type="button" id="login" disabled>Login</button>
             </form>
-        </div>-->
+        </div>
     </div>
-    <!--<script>
-        function selectNone() {
-            $('#xmpp').prop("checked", false);
-            $('#mail').prop("checked", false);
-            $('#broadsoft').prop("checked", false);
-            $('#sms').prop("checked", false);
-            $('#twitter').prop("checked", false);
-        }
-
-        function selectAll() {
-            $('#xmpp').prop("checked", true);
-            $('#mail').prop("checked", true);
-            $('#broadsoft').prop("checked", true);
-            $('#sms').prop("checked", true);
-            $('#twitter').prop("checked", true);
-        }
-    </script>-->
 </body>
 </html>
