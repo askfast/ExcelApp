@@ -43,6 +43,13 @@
                 <strong>Step 1: </strong> Select an excel range containing valid addresses. <br />
                 Customize your headers by going to the <a class="nexttab" href="#">Settings</a> tab
             </p>
+            <!--divider -->
+
+            <ul class="nav nav-list">
+                <li class="divider"> </li>
+            </ul>
+            <!-- divider ends -->
+            
             <strong>Step 2: </strong> Choose your message type:
            <!-- <select id="questionType" style="width: 150px">
                 <option value="comment" selected="selected">Broadcast</option>
@@ -59,11 +66,21 @@
             </div>
 
             <!-- end -->
+            <ul class="nav nav-list">
+                <li class="divider"> </li>
+            </ul>
 
             <p id="questionTypeInfo" style="padding-left: 10px"></p>
 
             <p><strong>Step 3: </strong> Enter a message to be sent.</p>
             <textarea rows="5" cols="200" id="message" placeholder="Your message.." style="min-width:275px"></textarea>
+
+            <!--divider -->
+
+            <ul class="nav nav-list">
+                <li class="divider"> </li>
+            </ul>
+            <!-- divider ends -->
 
             <p><strong>Step 4: </strong> Please uncheck if you want to ignore any address columns.</p>
 
@@ -79,6 +96,13 @@
             <input name="adapterTypes" id="sms" type="checkbox" value="sms" checked />SMS <br>
             <input name="adapterTypes" id="twitter" type="checkbox" value="twitter" checked />Twitter
 
+
+            <!--divider -->
+
+            <ul class="nav nav-list">
+                <li class="divider"> </li>
+            </ul>
+            <!-- divider ends -->
 
             <div id="languageDiv">
                 <p><strong>Step 5: </strong> Language for TTS: </p>
@@ -123,6 +147,13 @@
                     <td><input type="text" id="subject" placeholder="Add a subject to your email.." style="min-width:200px"></td>
                 </tr>
             </table>
+
+            <!--divider -->
+
+            <ul class="nav nav-list">
+                <li class="divider"> </li>
+            </ul>
+            <!-- divider ends -->
 
             <p id="broadcastMessage"><strong>Step 6: </strong> Send your message.</p>
             <button type="button" id="send" disabled>Send!</button>
