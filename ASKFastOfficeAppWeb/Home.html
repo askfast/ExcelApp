@@ -27,42 +27,58 @@
     <!-- Page content -->
     <div style="background-color: white; height: auto">
         <div style="margin-bottom:0px;padding-left: 5px">
-            <img src="./askfast/Images/logo.png" alt="ASK-Fast" style="height: 30px">
+            <img src="./askfast/Images/logo2.png" alt="ASK-Fast" style="height: 30px">
         </div>
     </div>
     <ul class="nav nav-tabs" id="myTabs">
-        <li class="active"><a href="#homeTab">Home</a></li>
+        <li class="active"><a href="#loginTab">Login</a></li>
+        <li><a href="#settingsTab">Header Settings</a></li>
+        <li class=><a href="#homeTab">Communicate</a></li>
         <li><a href="#reportTab">Reports</a></li>
-        <li><a href="#settingsTab">Settings</a></li>
-        <li><a href="#loginTab">Login</a></li>
+
     </ul>
     <div id='content' class="tab-content">
-        <div class="tab-pane active" id="homeTab">
+        <div class="tab-pane" id="homeTab">
             <p>
                 <strong>Step 1: </strong> Select an excel range containing valid addresses. <br />
                 Customize your headers by going to the <a class="nexttab" href="#">Settings</a> tab
             </p>
             <strong>Step 2: </strong> Choose your message type:
-            <select id="questionType" style="width: 150px">
+           <!-- <select id="questionType" style="width: 150px">
                 <option value="comment" selected="selected">Broadcast</option>
                 <option value="open">Open Question</option>
                 <option value="closed">Yes/No Question</option>
-            </select>
+            </select> -->
+
+            <!-- turning the question types to radio buttons added by Ahmet -->
+
+            <div style="width: 150px">
+            <input name="questionType" id="" type="radio" value="comment" /> Broadcast <br>
+            <input name="questionType" id="" type="radio" value="open"/> Open Question <br>
+            <input name="questionType" id="" type="radio" value="closed"/> Yes/No Question
+            </div>
+
+            <!-- end -->
+
             <p id="questionTypeInfo" style="padding-left: 10px"></p>
 
             <p><strong>Step 3: </strong> Enter a message to be sent.</p>
             <textarea rows="5" cols="200" id="message" placeholder="Your message.." style="min-width:275px"></textarea>
 
             <p><strong>Step 4: </strong> Please uncheck if you want to ignore any address columns.</p>
-            <input name="adapterTypes" id="xmpp" type="checkbox" value="xmpp" checked />XMPP
-            <input name="adapterTypes" id="mail" type="checkbox" value="mail" checked />E-Mail
-            <input name="adapterTypes" id="broadsoft" type="checkbox" value="broadsoft" checked />Call
-            <input name="adapterTypes" id="sms" type="checkbox" value="sms" checked />SMS
-            <input name="adapterTypes" id="twitter" type="checkbox" value="twitter" checked />Twitter
-            <br />
+
+            <!-- show all and none links should be upfront rather than below -->
+
             <a href="#" id="selectNone" style="text-align: end">Select None</a>
             <a href="#" id="selectAll">Select All</a>
             <br />
+
+            <input name="adapterTypes" id="xmpp" type="checkbox" value="xmpp" checked />XMPP <br>
+            <input name="adapterTypes" id="mail" type="checkbox" value="mail" checked />E-mail <br>
+            <input name="adapterTypes" id="broadsoft" type="checkbox" value="broadsoft" checked />Call <br>
+            <input name="adapterTypes" id="sms" type="checkbox" value="sms" checked />SMS <br>
+            <input name="adapterTypes" id="twitter" type="checkbox" value="twitter" checked />Twitter
+
 
             <div id="languageDiv">
                 <p><strong>Step 5: </strong> Language for TTS: </p>
@@ -122,7 +138,17 @@
             <p><strong>Step 1:</strong> Select a cell where the report has to start.</p>
             <p style="min-width:80px">
                 <strong>Step 2: </strong> Report Details: <br>
-                <input id="matchQuestionCheckBox" type="checkbox" checked /><label id="matchingQuestionText" for="matchQuestionCheckBox"></label>
+              <!--  <input id="matchQuestionCheckBox" type="checkbox" checked /><label id="matchingQuestionText" for="matchQuestionCheckBox"></label> -->
+
+                <!-- Report types should be visible -->
+                <div>
+            <input name="questionType" id="" type="radio" value="allReports"/> Fetch all reports <br>
+            <input name="questionType" id="" type="radio" value="thisDialog"/> Fetch reports for current message. <br>
+        </div>
+
+            <!-- End -->
+
+
             </p>
             <p><strong>Step 3: </strong> Generate report.</p>
             <button type="button" id="generate">Generate!</button>
@@ -160,7 +186,7 @@
                 </tr>
             </table>
         </div>
-        <div class="tab-pane" id="loginTab">
+        <div class="tab-pane active" id="loginTab">
             <form>
                 <table border="0">
                     <tr>
