@@ -6,6 +6,8 @@
     var REPORT_URL = "/resource/examples/clipboard";
     var BROADCAST_URL = "/products/broadcastnew/stream";
     var ACCOUNT_PROFILE = "/accounts/account?detailed=true"
+    var ADAPTERS_URL = "/accounts/adapterconfigs"
+
     //default headers
     var smsHeader = "Mobile";
     var fixedLineHeader = "Fixed Line";
@@ -17,6 +19,8 @@
     var twitterHeader = "Twitter";
     //header mappings to adapters
     var headerMappings = {};
+    //adapters fetched
+    var userAdapters = {};
     var X_SESSION_ID = "";
     var lastTabSelected = "#homeTab"; //default it to hte active tab
 
@@ -34,7 +38,14 @@
         //login if username and password is enabled already
         if (supports_html5_storage()) {
             X_SESSION_ID = localStorage.getItem("X-SESSION_ID");
-            accountProfile(true);
+            if (X_SESSION_ID) {
+                switchTabShow(true);
+                accountProfile(true);
+            }
+            else {
+                switchTabShow(false);
+                performLoginIfCredentialsInLocalStorage();
+            }
         }
     });
 
@@ -48,8 +59,8 @@
         //event listners for adapters toggle 
         toggleAdapterTypes();
         $('#xmpp').change(toggleAdapterTypes);
-        $('#mail').change(toggleAdapterTypes);
-        $('#broadsoft').change(toggleAdapterTypes);
+        $('#email').change(toggleAdapterTypes);
+        $('#call').change(toggleAdapterTypes);
         $('#sms').change(toggleAdapterTypes);
         $('#twitter').change(toggleAdapterTypes);
         $('#login').click(doLogin);
@@ -108,9 +119,7 @@
                 //hide only login tab
                 switchTabShow(true);
             }).error(function (response) {
-                app.showNotification("Error", response.responseText);
-                //show only login tab
-                switchTabShow(false);
+                checkResponseForAccessIssue(response);
             });
         }
         return false;
@@ -127,8 +136,8 @@
             app.showNotification("", "Enter a message");
             return;
         }
-        if (!$('#xmpp').is(":checked") && !$('#mail').is(":checked") &&
-            !$('#broadsoft').is(":checked") && !$('#sms').is(":checked") &&
+        if (!$('#xmpp').is(":checked") && !$('#email').is(":checked") &&
+            !$('#call').is(":checked") && !$('#sms').is(":checked") &&
             !$('#twitter').is(":checked")) {
             app.showNotification("", "Pick a communication mode");
             return;
@@ -183,7 +192,7 @@
                     request.setRequestHeader("X-SESSION_ID", X_SESSION_ID);
                 },
                 url: './ASKFastRequestHandler.ashx' + BROADCAST_URL + '?questionType=' +
-                        $('[name=questionType]:checked').val() + appendHeaders() + "&appId= ",
+                $('[name=questionType]:checked').val() + appendHeaders() + "&appId= ",
                 type: 'POST',
                 dataType: 'json',
                 jsonpCallback: function (response) {
@@ -193,7 +202,7 @@
             }).success(function (response) {
                 showFailures(response);
             }).error(function (response) {
-                app.showNotification("Error", response.responseText);
+                checkResponseForAccessIssue(response);
             });
         } else {
             app.showNotification('Error:', result.error.message);
@@ -265,7 +274,7 @@
                 writeReportOnSheet(response);
                 app.showNotification("Success", "Reports generated successfully!");
             }).error(function (response) {
-                app.showNotification("Error", response.responseText);
+                checkResponseForAccessIssue(response);
             });
         }
         else {
@@ -331,7 +340,7 @@
                         if (asyncResult.status === "failed") {
                             //app.showNotification(asyncResult.error.name, asyncResult.error.message);
                             app.showNotification(asyncResult.error.name, "Please make sure you select one cell and "
-                               + "the range is empty where the report is to be generated");
+                             + "the range is empty where the report is to be generated");
                         }
                     });
             }
@@ -347,6 +356,7 @@
     //get account profile if user is logged in
     function accountProfile(switchTabs) {
         if (X_SESSION_ID != null && X_SESSION_ID != "") {
+            app.showNotification("", "Fetching your profile..");
             $.ajax({
                 cache: false,
                 contentType: 'application/json',
@@ -357,6 +367,7 @@
                 type: 'GET',
                 dataType: 'json'
             }).success(function (response) {
+                $('#notification-message').hide();
                 var username = response["userId"];
                 var language = response["language"];
                 var firstName = response["ownerContact"]["firstName"];
@@ -375,28 +386,64 @@
                     $('a[href="#homeTab"]').tab('show');
                 }
             }).error(function (response) {
-                X_SESSION_ID = null;
-                if (supports_html5_storage()) {
-                    $('#username').val(localStorage.getItem("username"));
-                    $('#password').val(localStorage.getItem("password"));
-                    if (localStorage.getItem("autoLogon")) {
-                        $("#autoLogon").prop("checked", localStorage.getItem("autoLogon") === 'true');
-                    }
-                    if ($('#username').val() != null && $('#password').val() != null) {
-                        if ($('#autoLogon').is(":checked")) {
-                            doLogin();
-                        }
-                        else {
-                            enableLoginButton();
-                        }
-                    }
-                }
+                checkResponseForAccessIssue(response);
+                performLoginIfCredentialsInLocalStorage();
             });
         }
         else {
             switchTabShow(false);
         }
     }
+
+    //perform login if username and passowrd exists in the localstorage
+    function performLoginIfCredentialsInLocalStorage() {
+        if (supports_html5_storage()) {
+            $('#username').val(localStorage.getItem("username"));
+            $('#password').val(localStorage.getItem("password"));
+            if (localStorage.getItem("autoLogon")) {
+                $("#autoLogon").prop("checked", localStorage.getItem("autoLogon") === 'true');
+            }
+            if ($('#username').val() != null && $('#password').val() != null) {
+                if ($('#autoLogon').is(":checked")) {
+                    doLogin();
+                }
+                else {
+                    enableLoginButton();
+                }
+            }
+        }
+    }
+
+    //get account adapters
+    function getAdapters() {
+        if (X_SESSION_ID != null && X_SESSION_ID != "") {
+            $.ajax({
+                cache: false,
+                contentType: 'application/json',
+                beforeSend: function (request) {
+                    request.setRequestHeader("X-SESSION_ID", X_SESSION_ID);
+                },
+                url: './ASKFastRequestHandler.ashx' + ADAPTERS_URL,
+                type: 'GET',
+                dataType: 'json'
+            }).success(function (response) {
+                for (var adapter in response) {
+                    userAdapters[adapter["adapterType"]] = adapter["myAddress"];
+                }
+                $("adapterTypes").each(function (index) {
+                    if (userAdapters[$(this).val()] == null) {
+                        $(this).hide();
+                    }
+                });
+            }).error(function (response) {
+                checkResponseForAccessIssue(response);
+            });
+        }
+        else {
+            switchTabShow(false);
+        }
+    }
+
     //logout
     function logout() {
         if (X_SESSION_ID != null && X_SESSION_ID != "") {
@@ -411,26 +458,20 @@
                 dataType: 'json'
             }).success(function (response) {
                 app.showNotification("Successfully logged out", response);
-                //hide only the login tab
-                changeTabVisibility(false, true, true, true, true, true);
-                $('a[href="#loginTab"]').tab('show');
+                switchTabShow(false);
                 X_SESSION_ID = null;
                 if (supports_html5_storage()) {
                     localStorage.removeItem("X-SESSION_ID");
                 }
             }).error(function (response) {
-                app.showNotification("Error", response.responseText);
-                X_SESSION_ID = null;
-                if (supports_html5_storage()) {
-                    localStorage.removeItem("X-SESSION_ID");
-                }
+                checkResponseForAccessIssue(response);
             });
         }
     }
 
     //enable extras if text message (apart from twitter) is selected
     function toggleAdapterTypes() {
-        if ($('#broadsoft').is(":checked")) {
+        if ($('#call').is(":checked")) {
             $('#extrasHeader').html('<strong>Step 6: </strong> Attach your name to your message.');
             $('#languageDiv').show();
         }
@@ -439,17 +480,17 @@
             $('#extrasHeader').html('<strong>Step 5: </strong> Attach your name to your message.');
             $('#broadcastMessage').html('<strong>Step 6: </strong> Send your message.');
         }
-        if ($('#xmpp').is(":checked") || $('#sms').is(":checked") || $('#mail').is(":checked")) {
+        if ($('#xmpp').is(":checked") || $('#sms').is(":checked") || $('#email').is(":checked")) {
             $('#extras').show();
             $('#extrasHeader').show();
-            if ($('#broadsoft').is(":checked")) {
+            if ($('#call').is(":checked")) {
                 $('#broadcastMessage').html('<strong>Step 7: </strong> Send your message.');
             }
             if ($('#xmpp').is(":checked") || $('#sms').is(":checked")) {
                 $('#senderIdRow').show();
                 $('#subjectRow').hide();
             }
-            if ($('#mail').is(":checked")) {
+            if ($('#email').is(":checked")) {
                 $('#senderIdRow').show();
                 $('#subjectRow').show();
             }
@@ -463,8 +504,8 @@
 
     function selectNone() {
         $('#xmpp').prop("checked", false);
-        $('#mail').prop("checked", false);
-        $('#broadsoft').prop("checked", false);
+        $('#email').prop("checked", false);
+        $('#call').prop("checked", false);
         $('#sms').prop("checked", false);
         $('#twitter').prop("checked", false);
         toggleAdapterTypes();
@@ -472,8 +513,8 @@
 
     function selectAll() {
         $('#xmpp').prop("checked", true);
-        $('#mail').prop("checked", true);
-        $('#broadsoft').prop("checked", true);
+        $('#email').prop("checked", true);
+        $('#call').prop("checked", true);
         $('#sms').prop("checked", true);
         $('#twitter').prop("checked", true);
         toggleAdapterTypes();
@@ -502,8 +543,8 @@
             localStorage.setItem("reportType", $('[name=reportType]:checked').val());
             localStorage.setItem("language", $('#language').val());
             localStorage.setItem("xmpp", $('#xmpp').is(":checked"));
-            localStorage.setItem("mail", $('#mail').is(":checked"));
-            localStorage.setItem("broadsoft", $('#broadsoft').is(":checked"));
+            localStorage.setItem("email", $('#email').is(":checked"));
+            localStorage.setItem("call", $('#call').is(":checked"));
             localStorage.setItem("sms", $('#sms').is(":checked"));
             localStorage.setItem("twitter", $('#twitter').is(":checked"));
             localStorage.setItem("senderId", $('#senderId').val());
@@ -533,11 +574,11 @@
             if (localStorage.getItem("xmpp")) {
                 $("#xmpp").prop("checked", localStorage.getItem("xmpp") === 'true');
             }
-            if (localStorage.getItem("mail")) {
-                $("#mail").prop("checked", localStorage.getItem("mail") === 'true');
+            if (localStorage.getItem("email")) {
+                $("#email").prop("checked", localStorage.getItem("email") === 'true');
             }
-            if (localStorage.getItem("broadsoft")) {
-                $("#broadsoft").prop("checked", localStorage.getItem("broadsoft") === 'true');
+            if (localStorage.getItem("call")) {
+                $("#call").prop("checked", localStorage.getItem("call") === 'true');
             }
             if (localStorage.getItem("sms")) {
                 $("#sms").prop("checked", localStorage.getItem("sms") === 'true');
@@ -618,6 +659,9 @@
             //hide all tabs except the login one
             changeTabVisibility(false, true, true, true, true);
             $('a[href="#loginTab"]').tab('show');
+            if (supports_html5_storage && X_SESSION_ID == null) {
+                localStorage.removeItem("X-SESSION_ID");
+            }
         }
     }
 
@@ -653,11 +697,11 @@
         if ($('#xmpp').is(":checked")) {
             resultChannels[channelCounter++] = $('#xmpp').val();
         }
-        if ($('#mail').is(":checked")) {
-            resultChannels[channelCounter++] = $('#mail').val();
+        if ($('#email').is(":checked")) {
+            resultChannels[channelCounter++] = $('#email').val();
         }
-        if ($('#broadsoft').is(":checked")) {
-            resultChannels[channelCounter++] = $('#broadsoft').val();
+        if ($('#call').is(":checked")) {
+            resultChannels[channelCounter++] = $('#call').val();
         }
         if ($('#sms').is(":checked")) {
             resultChannels[channelCounter++] = $('#sms').val();
@@ -676,8 +720,8 @@
         return "&firstName=" + encodeURIComponent(firstNameHeader) +
         "&lastName=" + encodeURIComponent(lastNameHeader) +
         "&smsHeader=" + (($('#sms').is(":checked")) ? encodeURIComponent(smsHeader) : "") +
-        "&callHeader=" + (($('#broadsoft').is(":checked")) ? encodeURIComponent(fixedLineHeader) : "") +
-        "&emailHeader=" + (($('#mail').is(":checked")) ? encodeURIComponent(emailHeader) : "") +
+        "&callHeader=" + (($('#call').is(":checked")) ? encodeURIComponent(fixedLineHeader) : "") +
+        "&emailHeader=" + (($('#email').is(":checked")) ? encodeURIComponent(emailHeader) : "") +
         "&xmppHeader=" + (($('#xmpp').is(":checked")) ? encodeURIComponent(xmppHeader) : "") +
         "&twitterHeader=" + (($('#twitter').is(":checked")) ? encodeURIComponent(twitterHeader) : "");
     }
@@ -695,11 +739,11 @@
         //update the headerMappings
         headerMappings["firstName"] = firstNameHeader;
         headerMappings["lastName"] = lastNameHeader;
-        headerMappings["broadsoft"] = fixedLineHeader;
-        headerMappings["sms"] = smsHeader;
-        headerMappings["xmpp"] = xmppHeader;
-        headerMappings["mail"] = emailHeader;
-        headerMappings["twitter"] = twitterHeader;
+        headerMappings["CALL"] = fixedLineHeader;
+        headerMappings["SMS"] = smsHeader;
+        headerMappings["XMPP"] = xmppHeader;
+        headerMappings["EMAIL"] = emailHeader;
+        headerMappings["TWITTER"] = twitterHeader;
     }
 
     //returns true or false based on the mediums selected in the checkbox: adapterTypes
@@ -713,5 +757,25 @@
             }
         }
         return true;
+    }
+
+    //show suitable messages based on the response
+    function checkResponseForAccessIssue(httpResponse) {
+        switch (httpResponse.status) {
+            case 403:
+                app.showNotification("", "Please login again..");
+                switchTabShow(false);
+                if (supports_html5_storage()) {
+                    localStorage.removeItem("X-SESSION_ID");
+                }
+                break;
+            default:
+                app.showNotification("", "Please login again..");
+                switchTabShow(false);
+                if (supports_html5_storage()) {
+                    localStorage.removeItem("X-SESSION_ID");
+                }
+                break;
+        }
     }
 })();

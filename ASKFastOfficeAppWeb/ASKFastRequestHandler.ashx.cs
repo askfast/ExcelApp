@@ -56,19 +56,19 @@ namespace ASKFastOfficeAppWeb.App
                     {
                         payload = reader.ReadToEnd();
                     }
-                    var responseByteArray = askFast.UploadData(MARKETPLACE_PATH + context.Request.PathInfo, Encoding.ASCII.GetBytes(payload));
-                    response = System.Text.Encoding.Default.GetString(responseByteArray);
+                    response = askFast.UploadString(MARKETPLACE_PATH + context.Request.PathInfo, payload);
                 }
                 //GET oepration to fetch the reports and login
                 else if (context.Request.HttpMethod.Equals("GET"))
                 {
-                    var responseByteArray = askFast.DownloadData(MARKETPLACE_PATH + context.Request.PathInfo);
-                    response = System.Text.Encoding.Default.GetString(responseByteArray);
+                    response = askFast.DownloadString(MARKETPLACE_PATH + context.Request.PathInfo);
                 }
             }
-            catch (Exception ex)
+            catch (WebException ex)
             {
-                context.Response.StatusCode = 500;
+                var errorResponse = (HttpWebResponse)ex.Response;
+                context.Response.StatusDescription = errorResponse.StatusDescription;
+                context.Response.StatusCode = (int)errorResponse.StatusCode;
                 response = "Error: " + ex.Message;
                 Console.Write(response);
             }
