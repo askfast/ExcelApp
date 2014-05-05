@@ -74,6 +74,8 @@
     <Content Include="askfast\ask-bootstrap\public\src\js\cryptojs.js" />
     <Content Include="askfast\ask-bootstrap\public\src\js\libs\bootstrap\bootstrap.min.js" />
     <Content Include="askfast\ask-bootstrap\public\src\less\datepicker.less" />
+    <Content Include="askfast\Images\favicon.ico" />
+    <Content Include="askfast\Images\logo.png" />
     <Content Include="askfast\Images\officejs_error.jpg" />
     <Content Include="docs\PrivacyStatementASKFast.pdf" />
     <Content Include="docs\ExcelAppSupportDoc.pdf" />
@@ -210,8 +212,8 @@
     <Content Include="askfast\ask-bootstrap\public\src\robots.txt" />
     <Content Include="askfast\Content\Office.css" />
     <Content Include="askfast\Images\Close.png" />
-    <Content Include="askfast\Images\logo.png" />
     <Content Include="askfast\Images\favicon.png" />
+    <Content Include="__Home.html" />
     <Content Include="packages.config" />
     <None Include="askfast\ask-bootstrap\public\src\js\libs\jquery\jquery-1.9.1.intellisense.js" />
     <Content Include="askfast\Scripts\Home.js" />
