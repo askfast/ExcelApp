@@ -118,6 +118,7 @@
                 $('a[href="#homeTab"]').tab('show');
                 //hide only login tab
                 switchTabShow(true);
+                getAdapters();
             }).error(function (response) {
                 checkResponseForAccessIssue(response);
             });
@@ -385,6 +386,7 @@
                     //hide only login 
                     $('a[href="#homeTab"]').tab('show');
                 }
+                getAdapters();
             }).error(function (response) {
                 checkResponseForAccessIssue(response);
                 performLoginIfCredentialsInLocalStorage();
@@ -427,10 +429,12 @@
                 type: 'GET',
                 dataType: 'json'
             }).success(function (response) {
-                for (var adapter in response) {
+                console.log(response);
+                for (var adapterCount = 0; adapterCount < response.length; adapterCount++) {
+                    var adapter = response[adapterCount];
                     userAdapters[adapter["adapterType"]] = adapter["myAddress"];
                 }
-                $("adapterTypes").each(function (index) {
+                $("input[name='adapterTypes']").each(function (index) {
                     if (userAdapters[$(this).val()] == null) {
                         $(this).hide();
                     }
