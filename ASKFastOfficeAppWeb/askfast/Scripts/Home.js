@@ -139,7 +139,6 @@
             app.showNotification("", "Pick a communication mode");
             return;
         }
-
         if (X_SESSION_ID != null && X_SESSION_ID != "") {
             storeDataInLocalStorage();
             //fix a binding element to the addresses selected
@@ -225,7 +224,12 @@
                     if (columnCount != 0) {
                         rowData += ",";
                     }
-                    rowData += result[rowCount][columnCount];
+                    if (rowCount == rowStart) {
+                        rowData += result[rowCount][columnCount].toUpperCase();
+                    }
+                    else {
+                        rowData += result[rowCount][columnCount];
+                    }
                 }
             }
             if (rowData != '') {
@@ -728,23 +732,23 @@
         var resultChannels = new Array();
         var channelCounter = 0;
         if ($('#xmpp').is(":checked")) {
-            resultChannels[channelCounter++] = $('#xmpp').val();
+            resultChannels[channelCounter++] = $('#xmpp').val().toUpperCase();
         }
         if ($('#email').is(":checked")) {
-            resultChannels[channelCounter++] = $('#email').val();
+            resultChannels[channelCounter++] = $('#email').val().toUpperCase();
         }
         if ($('#call').is(":checked")) {
-            resultChannels[channelCounter++] = $('#call').val();
+            resultChannels[channelCounter++] = $('#call').val().toUpperCase();
         }
         if ($('#sms').is(":checked")) {
-            resultChannels[channelCounter++] = $('#sms').val();
+            resultChannels[channelCounter++] = $('#sms').val().toUpperCase();
         }
         if ($('#twitter').is(":checked")) {
-            resultChannels[channelCounter++] = $('#twitter').val();
+            resultChannels[channelCounter++] = $('#twitter').val().toUpperCase();
         }
         //ugly hack: including the firstName and the lastName headers
-        resultChannels[channelCounter++] = "firstName";
-        resultChannels[channelCounter++] = "lastName";
+        resultChannels[channelCounter++] = "FIRSTNAME";
+        resultChannels[channelCounter++] = "LASTNAME";
         return resultChannels;
     }
 
@@ -762,13 +766,13 @@
     //update the default columnHeaders if changes in settings tab
     function updateHeaders() {
         //update the headers
-        smsHeader = $('#smsHeader').val() != smsHeader ? $('#smsHeader').val() : smsHeader;
-        fixedLineHeader = $('#fixedLineHeader').val() != fixedLineHeader ? $('#fixedLineHeader').val() : fixedLineHeader;
-        firstNameHeader = $('#firstNameHeader').val() != firstNameHeader ? $('#firstNameHeader').val() : firstNameHeader;
-        lastNameHeader = $('#lastNameHeader').val() != lastNameHeader ? $('#lastNameHeader').val() : lastNameHeader;
-        emailHeader = $('#emailHeader').val() != emailHeader ? $('#emailHeader').val() : emailHeader;
-        xmppHeader = $('#xmppHeader').val() != xmppHeader ? $('#xmppHeader').val() : xmppHeader;
-        twitterHeader = $('#twitterHeader').val() != twitterHeader ? $('#twitterHeader').val() : twitterHeader;
+        smsHeader = $('#smsHeader').val().toUpperCase();
+        fixedLineHeader = $('#fixedLineHeader').val().toUpperCase();
+        firstNameHeader = $('#firstNameHeader').val().toUpperCase();
+        lastNameHeader = $('#lastNameHeader').val().toUpperCase();
+        emailHeader = $('#emailHeader').val().toUpperCase();
+        xmppHeader = $('#xmppHeader').val().toUpperCase();
+        twitterHeader = $('#twitterHeader').val().toUpperCase();
         //update the headerMappings
         headerMappings["firstName"] = firstNameHeader;
         headerMappings["lastName"] = lastNameHeader;
@@ -784,8 +788,8 @@
         updateHeaders();
         var channelsChecked = getChannelsChecked();
         for (var headerKey in headerMappings) {
-            if (headerMappings[headerKey] == header
-                && $.inArray(headerKey, channelsChecked) != -1) {
+            if (headerMappings[headerKey].toUpperCase() == header.toUpperCase()
+                && $.inArray(headerKey.toUpperCase(), channelsChecked) != -1) {
                 return false;
             }
         }
