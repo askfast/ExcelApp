@@ -85,19 +85,28 @@
             <!-- divider ends -->
 
             <p><strong>Step 4: </strong> Select the mode(s) of communication.</p>
-
+            <label id="adapterFetchInfo"> </label>
             <!-- show all and none links should be upfront rather than below -->
-
-            <a href="#" id="selectNone" style="text-align: end">Select None</a>
-            <a href="#" id="selectAll">Select All</a>
-            <br />
-
-            <input name="adapterTypes" id="xmpp" type="checkbox" value="XMPP" checked />XMPP (JabberId, GTalk etc) <br>
-            <input name="adapterTypes" id="email" type="checkbox" value="EMAIL" checked />E-mail <br>
-            <input name="adapterTypes" id="call" type="checkbox" value="CALL" checked />Call <br>
-            <input name="adapterTypes" id="sms" type="checkbox" value="SMS" checked />SMS <br>
-            <input name="adapterTypes" id="twitter" type="checkbox" value="TWITTER" checked />Twitter
-
+            <div id="adapterList" style="display:none">
+                <a href="#" id="selectNone" style="text-align: end">Select None</a>
+                <a href="#" id="selectAll">Select All</a>
+                <br />
+                <div id="xmppCB" style="display:none">
+                    <input name="adapterTypes" id="xmpp" type="checkbox" value="XMPP" checked />XMPP (JabberId, GTalk etc) <br>
+                </div>
+                <div id="emailCB" style="display:none">
+                    <input name="adapterTypes" id="email" type="checkbox" value="EMAIL" checked />E-mail <br>
+                </div>
+                <div id="callCB" style="display:none">
+                    <input name="adapterTypes" id="call" type="checkbox" value="CALL" checked />Call <br>
+                </div>
+                <div id="smsCB" style="display:none">
+                    <input name="adapterTypes" id="sms" type="checkbox" value="SMS" checked />SMS <br>
+                </div>
+                <div id="twitterCB" style="display:none">
+                    <input name="adapterTypes" id="twitter" type="checkbox" value="TWITTER" checked />Twitter
+                </div>
+            </div>
 
             <!--divider -->
 

@@ -176,9 +176,10 @@
             broadcastNode["senderName"] = $('#senderId').val() != null ?
             $('#senderId').val() : "ASKFast4Excel";
             broadcastNode["message"] = $('#message').val();
-            if ($('#questionType').val() == 'closed') {
+            if ($('[name=questionType]:checked').val() == 'closed') {
                 broadcastNode["answers"] = ["Yes", "No"];
             }
+            broadcastNode["questionType"] = $('[name=questionType]:checked').val();
             broadcastNode["retryMethod"] = 'MANUAL';
             broadcastNode["broadcastName"] = 'Broadcast from ASK-Fast Excel App';
             broadcastNode["emailSubject"] = $('#subject').val() != null ?
@@ -192,8 +193,7 @@
                 beforeSend: function (request) {
                     request.setRequestHeader("X-SESSION_ID", X_SESSION_ID);
                 },
-                url: './ASKFastRequestHandler.ashx' + BROADCAST_URL + '?questionType=' +
-                $('[name=questionType]:checked').val() + appendHeaders() + "&appId= ",
+                url: './ASKFastRequestHandler.ashx' + BROADCAST_URL + appendHeaders() + "&appId= ",
                 type: 'POST',
                 dataType: 'json',
                 jsonpCallback: function (response) {
@@ -341,7 +341,7 @@
                         if (asyncResult.status === "failed") {
                             //app.showNotification(asyncResult.error.name, asyncResult.error.message);
                             app.showNotification(asyncResult.error.name, "Please make sure you select one cell and "
-                             + "the range is empty where the report is to be generated");
+                               + "the range is empty where the report is to be generated");
                         }
                     });
             }
@@ -419,6 +419,7 @@
     //get account adapters
     function getAdapters() {
         if (X_SESSION_ID != null && X_SESSION_ID != "") {
+            $("#adapterFetchInfo").html("Fetching your adapters..");
             $.ajax({
                 cache: false,
                 contentType: 'application/json',
@@ -429,14 +430,15 @@
                 type: 'GET',
                 dataType: 'json'
             }).success(function (response) {
-                console.log(response);
+                $("#adapterList").show();
+                $("#adapterFetchInfo").html("");
                 for (var adapterCount = 0; adapterCount < response.length; adapterCount++) {
                     var adapter = response[adapterCount];
                     userAdapters[adapter["adapterType"]] = adapter["myAddress"];
                 }
-                $("input[name='adapterTypes']").each(function (index) {
-                    if (userAdapters[$(this).val()] == null) {
-                        $(this).hide();
+                $("input[name='adapterTypes']").each(function () {
+                    if (userAdapters[$(this).val()] != null) {
+                        $("#" + this.id + "CB").show();
                     }
                 });
             }).error(function (response) {
@@ -686,7 +688,7 @@
             }
             else {
                 var message = "Message sent successfully!"
-                if ($('questionType').val() != 'comment') {
+                if ($('[name=questionType]:checked').val() != 'comment') {
                     message += "\n You can now collect feedback by going to the Reports tab";
                 }
                 app.showNotification("Success", message);
@@ -721,7 +723,7 @@
 
     //returns a string value of all the header query parameters added
     function appendHeaders() {
-        return "&firstName=" + encodeURIComponent(firstNameHeader) +
+        return "?firstName=" + encodeURIComponent(firstNameHeader) +
         "&lastName=" + encodeURIComponent(lastNameHeader) +
         "&smsHeader=" + (($('#sms').is(":checked")) ? encodeURIComponent(smsHeader) : "") +
         "&callHeader=" + (($('#call').is(":checked")) ? encodeURIComponent(fixedLineHeader) : "") +
