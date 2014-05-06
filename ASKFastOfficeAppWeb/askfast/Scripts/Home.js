@@ -97,11 +97,7 @@
     function doLogin() {
         if ($('#username').val() != null && $('#password').val() != null) {
             //store the page values in local storage
-            if (supports_html5_storage()) {
-                localStorage.setItem("username", $('#username').val());
-                localStorage.setItem("password", $('#password').val());
-                localStorage.setItem("autoLogon", $('#autoLogon').is(":checked"));
-            }
+            storeDataInLocalStorage();
             app.showNotification("Signing in..", "");
             $.ajax({
                 cache: false,
@@ -466,6 +462,8 @@
                 app.showNotification("Successfully logged out", response);
                 switchTabShow(false);
                 X_SESSION_ID = null;
+                flushDataInLocalStorage(); //flush all data from local storage
+                loadDataFromLocalStorage(); //load the username and password
                 if (supports_html5_storage()) {
                     localStorage.removeItem("X-SESSION_ID");
                 }
@@ -543,6 +541,9 @@
     //store all the entered info in the local storage
     function storeDataInLocalStorage() {
         if (supports_html5_storage()) {
+            localStorage.setItem("username", $('#username').val());
+            localStorage.setItem("password", $('#password').val());
+            localStorage.setItem("autoLogon", $('#autoLogon').is(":checked"));
             localStorage.setItem("X-SESSION_ID", X_SESSION_ID);
             localStorage.setItem("message", $('#message').val());
             localStorage.setItem("questionType", $('[name=questionType]:checked').val());
@@ -564,12 +565,38 @@
             localStorage.setItem("twitterHeader", $('#twitterHeader').val());
         }
     }
+    //flush all data from local storage
+    function flushDataInLocalStorage() {
+        if (supports_html5_storage()) {
+            localStorage.removeItem("X-SESSION_ID");
+            localStorage.removeItem("message");
+            localStorage.removeItem("questionType");
+            localStorage.removeItem("reportType");
+            localStorage.removeItem("language");
+            localStorage.removeItem("xmpp");
+            localStorage.removeItem("email");
+            localStorage.removeItem("call");
+            localStorage.removeItem("sms");
+            localStorage.removeItem("twitter");
+            localStorage.removeItem("senderId");
+            localStorage.removeItem("subject");
+            localStorage.removeItem("firstNameHeader");
+            localStorage.removeItem("lastNameHeader");
+            localStorage.removeItem("xmppHeader");
+            localStorage.removeItem("smsHeader");
+            localStorage.removeItem("fixedLineHeader");
+            localStorage.removeItem("emailHeader");
+            localStorage.removeItem("twitterHeader");
+        }
+    }
 
     //load all saved info from the local storage
     function loadDataFromLocalStorage() {
         if (supports_html5_storage()) {
             X_SESSION_ID = localStorage.getItem("X-SESSION_ID");
             $('#message').val(localStorage.getItem("message"));
+            $('#username').val(localStorage.getItem("username"));
+            $('#password').val(localStorage.getItem("password"));
             if (localStorage.getItem("questionType")) {
                 $('[name=questionType][value=' + localStorage.getItem("questionType") + ']').prop("checked", true);
             }
