@@ -324,7 +324,7 @@
                     rowData[2] = questionText;
                     //ignore this question if the text doesnt match
                     if ($('[name=reportType]:checked').val() == "thisDialog" && $('#message').val()
-                        && $('#message').val() != decodeURIComponent(questionText)) {
+                        && $('#message').val() != null && $('#message').val() != '' && $('#message').val() != decodeURIComponent(questionText)) {
                         continue;
                     }
                 }
