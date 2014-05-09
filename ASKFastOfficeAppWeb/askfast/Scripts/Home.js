@@ -323,10 +323,15 @@
                     }
                     rowData[2] = questionText;
                     //ignore this question if the text doesnt match
-                    if ($('[name=reportType]:checked').val() == "thisDialog" && $('#message').val()
-                        && $('#message').val() != null && $('#message').val() != '' && $('#message').val() != decodeURIComponent(questionText)) {
+                    if (($('[name=reportType]:checked').val() == "thisDialog" && $('#message').val()
+                            && $('#message').val() != decodeURIComponent(questionText)) ||
+                        (questionText == null || questionText == ''))
+                    {
                         continue;
                     }
+                }
+                else {
+                    continue;
                 }
                 rowData[3] = questionMap["responder"];
                 rowData[4] = questionMap["adapterType"];
