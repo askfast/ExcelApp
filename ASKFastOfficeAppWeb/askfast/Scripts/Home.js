@@ -1,5 +1,4 @@
 ﻿/// <reference path="../App.js" />
-
 (function () {
     "use strict";
     //market place urls
@@ -86,6 +85,13 @@
         });
         enableLoginButton();
         enableSendButton();
+        $("form input").keypress(function (e) {
+            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                $('#login').click();
+            } else {
+                return true;
+            }
+        });
     }
 
     function initializeApp(reason) {
@@ -324,9 +330,8 @@
                     rowData[2] = questionText;
                     //ignore this question if the text doesnt match
                     if (($('[name=reportType]:checked').val() == "thisDialog" && $('#message').val()
-                            && $('#message').val() != decodeURIComponent(questionText)) ||
-                        (questionText == null || questionText == ''))
-                    {
+                        && $('#message').val() != decodeURIComponent(questionText)) ||
+                        (questionText == null || questionText == '')) {
                         continue;
                     }
                 }
@@ -346,7 +351,7 @@
                         if (asyncResult.status === "failed") {
                             //app.showNotification(asyncResult.error.name, asyncResult.error.message);
                             app.showNotification(asyncResult.error.name, "Please make sure you select one cell and "
-                               + "the range is empty where the report is to be generated");
+                             + "the range is empty where the report is to be generated");
                         }
                     });
             }
@@ -812,7 +817,7 @@
                 }
                 break;
             default:
-                app.showNotification("", "Please login again..");
+                app.showNotification("", "Please login again.. ");
                 switchTabShow(false);
                 if (supports_html5_storage()) {
                     localStorage.removeItem("X-SESSION_ID");

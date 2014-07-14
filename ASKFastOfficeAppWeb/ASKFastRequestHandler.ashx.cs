@@ -13,7 +13,7 @@ namespace ASKFastOfficeAppWeb.App
     /// </summary>
     public class ASKFastRequestHandler : IHttpHandler
     {
-        public static readonly String MARKETPLACE_PATH = "http://live.askfastmarket.appspot.com";
+        public static readonly String MARKETPLACE_PATH = "https://askfastmarket.appspot.com";
         //public static readonly String MARKETPLACE_PATH = "http://127.0.0.1:8888";
         public static readonly String appID = "EXCEL_OFFICE_APP";
         public static readonly String baseUrl = MARKETPLACE_PATH + "/products/broadcastnew/stream";
