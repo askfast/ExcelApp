@@ -8,8 +8,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Communicator" />
   <Description DefaultValue="ASKFast Excel App for sending and collecting responses."/>
-  <IconUrl DefaultValue="https://ask-fast.com/askfast/askfast/Images/favicon.png" />
-  <SupportUrl DefaultValue="https://ask-fast.com/askfast/docs/ExcelAppSupportDoc.pdf" />
+  <IconUrl DefaultValue="https://excel.ask-fast.com/askfast/Images/favicon.png" />
+  <SupportUrl DefaultValue="https://excel.ask-fast.com/docs/ExcelAppSupportDoc.pdf" />
   <Capabilities>
     <Capability Name="Workbook" />
   </Capabilities>
